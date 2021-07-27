@@ -4,13 +4,16 @@ create type repeat as enum ('never', 'daily', 'weekly', 'monthly', 'yearly');
 drop table "event";
 create table "event" (
 	id integer primary key generated always as identity,
+    public_id varchar(64) not null,
 	insert_dttm timestamp not null default now(),
+    user_id integer not null,
 	name varchar(64) not null,
+    description varchar(1024),
 	first_date date not null,
 	repeat repeat not null
 );
 
---create table "event_email"
+--create table "reminder"
 
 drop table "user";
 create table "user" (

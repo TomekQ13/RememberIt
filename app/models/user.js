@@ -5,11 +5,8 @@ class User {
         if (params['email'] == undefined || params['password'] == undefined) {
             throw 'Email and password are required as arguments to the User class constructor.'
         }
-        this.email = params.email.toLowerCase()
-        this.password = params.password
-        this.id = params['id']
-        this.insert_dttm = params['insert_dttm']
-        this.name = params['name']
+        params.email = params.email.toLowerCase()
+        for(var k in params) this[k]=params[k];
     }
 
     async save() {

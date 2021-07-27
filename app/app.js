@@ -1,6 +1,12 @@
 const express = require("express");
 const app = express();
 const expressLayouts = require('express-ejs-layouts');
+const passport = require('passport');
+const {User, getUserByEmail, getUserById} = require('./models/user')
+const initializePassport = require('./passport-config');
+initializePassport(
+  passport,
+  email => getUserByEmail(email));
 const flash = require('express-flash');
 const session = require('express-session');
 
@@ -17,6 +23,8 @@ app.use(session({
     saveUninitialized: false
   }));
 app.use(flash());
+app.use(passport.initialize());
+app.use(passport.session());
 
 
 
@@ -24,6 +32,8 @@ const indexRouter = require('./routes/index')
 app.use('/', indexRouter)
 const userRouter = require('./routes/user')
 app.use('/user', userRouter)
+const eventRouter = require('./routes/events')
+app.use('/events', eventRouter)
 
 
 app.listen(process.env.PORT || 3000, () => {
