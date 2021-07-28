@@ -17,7 +17,6 @@ class Event {
     }
 
     async save() {
-        console.log([this.public_id, this.user_id, this.name, this.first_date, this.repeat, this.description])
         await client.query(
             'insert into "event" (public_id, user_id, name, first_date, repeat, description) values ($1, $2, $3, $4, $5, $6)',
             [this.public_id, this.user_id, this.name, this.first_date, this.repeat, this.description]
