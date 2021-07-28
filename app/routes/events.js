@@ -25,33 +25,7 @@ router.get("/:public_id", auth.checkAuthenticated,  async (req, res) => {
     res.render('event/event', {event: event})    
 })
 
-router.get("/new_event", auth.checkAuthenticated, async (req, res) => {
-    res.render('events/new_event')
-})
 
-router.post("/new_event", auth.checkAuthenticated, async (req, res) => {
-    try {
-        var event = new Event({
-            'user_id': req.user.id,
-            'name': req.body.name,
-            'first_date': req.body.first_date,
-            'repeat': req.body.repeat,
-            'description': req.body['description']
-        })
-    } catch (e) {
-        console.log(e)
-        res.redirect('/events')
-    }
-
-    try {
-        await event.save()
-    } catch (e) {
-        console.log(e)
-        res.redirect('events')
-    }
-
-    return res.redirect(`/events/${event.public_id}`)
-})
 
 router.delete("/:public_id", auth.checkAuthenticated,  async (req, res) => {
     try {

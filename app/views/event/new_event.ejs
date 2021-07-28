@@ -1,2 +1,24 @@
-<h1>New event</h1>
-<form></form>
+<h2 class="">New event</h2>
+<form action="/new_event" method="POST">
+    <div class="">
+        <label for="name">Name of the event</label>
+        <input type="text" id="name" name="name" required>
+    </div>
+    <div class="">
+        <label for="description">Description</label>
+        <input type="text" id="description" name="description" required>
+    </div>
+    <div class="">
+        <label for="first_date">Date of the event</label>
+        <input type="date" id="first_date" name="first_date" required>
+    </div>
+    <div class="">
+        <% repeat.forEach(element => { %>
+            <label for="<%= element %>"><%= element %></label>
+            <input type="radio" id="<%= element %>" name="repeat" value="<%= element %>" required>
+        <% }) %>
+    </div>
+    <div>
+        <button type="submit" class="btn">Register</button>
+    </div>  
+</form>

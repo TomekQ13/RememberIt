@@ -3,7 +3,7 @@ const uuid = require('uuid')
 
 class Event {
     constructor(params) {
-        const required_params = [user_id, name, first_date, repeat]
+        const required_params = ['user_id', 'name', 'first_date', 'repeat']
         required_params.map(el => {
             if (params[el] == undefined) {
                 throw `${el} is missing and is required to create new Event object`
@@ -17,8 +17,9 @@ class Event {
     }
 
     async save() {
+        console.log([this.public_id, this.user_id, this.name, this.first_date, this.repeat, this.description])
         await client.query(
-            'insert into "event" (public_id, user_id, name, first_date, repeat, description) values ($1, $2)',
+            'insert into "event" (public_id, user_id, name, first_date, repeat, description) values ($1, $2, $3, $4, $5, $6)',
             [this.public_id, this.user_id, this.name, this.first_date, this.repeat, this.description]
         )
         console.log(`Event with name ${this.name} and public_id ${this.public_id} saved successfully as a new event`)
@@ -32,21 +33,25 @@ class Event {
 }
 
 async function getEventById(id) {
-    r = await client.query(`select * from "event" where id =${id}`)
+    r = await client.query('select * from "event" where id =$1 and user_id = $2', [id])
     return new Event(r.rows[0])
 }
 
 async function getEventByPublicId(public_id) {
-    r = await client.query(`select * from "event" where public_id =${public_id}`)
+    r = await client.query('select * from "event" where public_id =$1', [public_id])
     return new Event(r.rows[0])
 }
 
 async function deleteEventByPublicId(public_id) {
-    await client.query(`delete from "event" where public_id = ${public_id}`)
+    await client.query('delete from "event" where public_id = $1', [public_id])
 }
 
-async function getAllEvents() {
-    r = await client.query('select * from "event"')
+async function getAllEvents(user_id=undefined) {
+    if (user_id) {
+        var r = await client.query('select * from "event" where user_id = $1', [user_id])
+    } else {
+        var r = await client.query('select * from "event"')
+    }    
     return r.rows
 }
 
