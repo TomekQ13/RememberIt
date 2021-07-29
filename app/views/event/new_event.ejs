@@ -2,15 +2,15 @@
 <form action="/new_event" method="POST">
     <div class="">
         <label for="name">Name of the event</label>
-        <input type="text" id="name" name="name" required>
+        <input type="text" id="name" name="name" value="<%= existing_event['name'] %>"  required>
     </div>
     <div class="">
         <label for="description">Description</label>
-        <input type="text" id="description" name="description" required>
+        <input type="text" id="description" name="description" value="<%= existing_event['description'] %>" required>
     </div>
     <div class="">
         <label for="first_date">Date of the event</label>
-        <input type="date" id="first_date" name="first_date" required>
+        <input type="date" id="first_date" name="first_date" value="<%= existing_event['first_date'] %>"required>
     </div>
     <div class="">
         <% repeat.forEach(element => { %>
@@ -18,7 +18,15 @@
             <input type="radio" id="<%= element %>" name="repeat" value="<%= element %>" required>
         <% }) %>
     </div>
+    <div class="">
+        <label for="remind_days_before">How many days before would you like to get a reminder?</label>
+        <input type="range" id="remind_days_before" name="remind_days_before" min="1" max="365" required>
+    </div>
+    <div class="">
+        <label for="remind_days_before">How many days before would you like to get a reminder?</label>
+        <input type="range" id="remind_days_before" name="remind_days_before" min="1" max="365" required>
+    </div>
     <div>
-        <button type="submit" class="btn">Register</button>
+        <button type="submit" class="btn">Submit</button>
     </div>  
 </form>

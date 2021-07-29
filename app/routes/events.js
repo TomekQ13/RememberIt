@@ -25,8 +25,6 @@ router.get("/:public_id", auth.checkAuthenticated,  async (req, res) => {
     res.render('event/event', {event: event})    
 })
 
-
-
 router.delete("/:public_id", auth.checkAuthenticated,  async (req, res) => {
     try {
         await deleteEventByPublicId(req.params.public_id)

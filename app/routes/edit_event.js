@@ -4,15 +4,16 @@ const client = require('../db.js')
 const {Event, getEventById, getEventByPublicId, deleteEventByPublicId, getAllEvents} = require('../models/event')
 const auth = require('../auth')
 
-router.get("/", auth.checkAuthenticated,  async (req, res) => {
+router.get("/:public_id", auth.checkAuthenticated,  async (req, res) => {
     try {
     // query selects all repeat enum values
         var repeat_labels = await client.query('SELECT unnest(enum_range(NULL::repeat))')
+        var existing_event = await getEventByPublicId(req.params.public_id)
     } catch (e) {
         console.error(e)
         return res.redirect('events')
     }
-    res.render('event/new_event', {repeat: repeat_labels.rows.map(el => el.unnest), existing_event: {}})
+    res.render('event/new_event', {repeat: repeat_labels.rows.map(el => el.unnest), existing_event: existing_event})
 
 })
 

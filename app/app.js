@@ -1,6 +1,8 @@
 const express = require("express");
 const app = express();
 const expressLayouts = require('express-ejs-layouts');
+const methodOverride= require('method-override');
+app.use(methodOverride('_method'))
 const passport = require('passport');
 const {User, getUserByEmail, getUserById} = require('./models/user')
 const initializePassport = require('./passport-config');
@@ -34,8 +36,10 @@ const userRouter = require('./routes/user')
 app.use('/user', userRouter)
 const eventRouter = require('./routes/events')
 app.use('/events', eventRouter)
-const new_eventRouter = require('./routes/new_event')
-app.use('/new_event', new_eventRouter)
+const newEventRouter = require('./routes/new_event')
+app.use('/new_event', newEventRouter)
+const editEventRouter = require('./routes/edit_event')
+app.use('/edit_event', editEventRouter)
 
 app.listen(process.env.PORT || 3000, () => {
     console.log("Application started and Listening on port 3000");

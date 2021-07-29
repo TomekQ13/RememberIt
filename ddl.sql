@@ -25,4 +25,14 @@ create table "user" (
 	name varchar(64)
 );
 
+drop table "reminder";
+create table "reminder" (
+	id integer primary key generated always as identity,
+	insert_dttm timestamp not null default now(),
+	update_dttm timestamp,
+	event_id integer not null,
+	remind_days_before integer not null,
+	check (remind_days_before between 1 and 365)
+);
+
 
