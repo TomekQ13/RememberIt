@@ -1,5 +1,10 @@
 <h2 class="">New event</h2>
-<form action="/new_event" method="POST">
+<form
+    <% if (existing_event['public_id']) { %>
+        action="/edit_event/<%- existing_event.public_id %>"
+    <% } else { %>
+        action="/new_event" method="POST">
+    <% } %>
     <div class="">
         <label for="name">Name of the event</label>
         <input type="text" id="name" name="name" value="<%= existing_event['name'] %>"  required>
@@ -10,22 +15,31 @@
     </div>
     <div class="">
         <label for="first_date">Date of the event</label>
-        <input type="date" id="first_date" name="first_date" value="<%= existing_event['first_date'] %>"required>
+        <input type="date" id="first_date" name="first_date" <% if (existing_event['first_date']) { %>
+           value="<%= existing_event['first_date'].toISOString().substring(0,10) %>"
+        <% } %> required>
     </div>
     <div class="">
         <% repeat.forEach(element => { %>
             <label for="<%= element %>"><%= element %></label>
-            <input type="radio" id="<%= element %>" name="repeat" value="<%= element %>" required>
+            <input type="radio" id="<%= element %>" name="repeat" value="<%= element %>" required <% if (element === existing_event.repeat) { %>
+                checked
+            <% } %>>
         <% }) %>
     </div>
-    <div class="">
-        <label for="remind_days_before">How many days before would you like to get a reminder?</label>
-        <input type="range" id="remind_days_before" name="remind_days_before" min="1" max="365" required>
-    </div>
-    <div class="">
-        <label for="remind_days_before">How many days before would you like to get a reminder?</label>
-        <input type="range" id="remind_days_before" name="remind_days_before" min="1" max="365" required>
-    </div>
+    <% if (existing_event.remind_days_before) { %>
+        <% existing_event.remind_days_before.forEach(element => { %>
+            <div class="">
+                <label for="remind_days_before">How many days before would you like to get a reminder?</label>
+                <input type="range" id="remind_days_before" name="remind_days_before" min="1" max="365" required value="<%= element %> ">
+            </div>
+        <% }) %>
+    <% } else { %>
+        <div class="">
+            <label for="remind_days_before">How many days before would you like to get a reminder?</label>
+            <input type="range" id="remind_days_before" name="remind_days_before" min="1" max="365" required>
+        </div>
+    <% } %>
     <div>
         <button type="submit" class="btn">Submit</button>
     </div>  

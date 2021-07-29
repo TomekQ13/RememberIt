@@ -4,11 +4,11 @@ const uuid = require('uuid')
 class Event {
     constructor(params) {
         const required_params = ['user_id', 'name', 'first_date', 'repeat', 'remind_days_before']
-        // required_params.map(el => {
-        //     if (params[el] == undefined) {
-        //         throw `${el} is missing and is required to create new Event object`
-        //     }
-        // })
+        required_params.map(el => {
+            if (params[el] == undefined) {
+                throw `${el} is missing and is required to create new Event object`
+            }
+        })
         for(var k in params) this[k]=params[k];
         // public_id is generated for new events
         if (params['public_id'] == undefined) {
@@ -20,7 +20,7 @@ class Event {
         for (const remind_days in this.remind_days_before) {
             await client.query(
                 'insert into "reminder" (event_public_id, remind_days_before) values ($1, $2)',
-                [this.public_id, remind_days]
+                [this.public_id, this.remind_days_before[remind_days]]
             )
             console.log(`Reminder with days ${remind_days} for event with public_id ${this.public_id} saved successfully`)
         }
@@ -46,10 +46,11 @@ class Event {
 }
 
 async function combineEventAndReminders(queryToSelectEvent, queryParams) {
-    r = await client.query(queryToSelectEvent, queryParams)
-    var event = new Event(r.rows[0])
-    event['reminders'] = await client.query('select remind_days_before from "reminder" where event_public_id = $1', [event.public_id]).rows
-    return event
+    const raw_results = await client.query(queryToSelectEvent, queryParams)
+    var results = raw_results.rows[0]
+    const reminders = await client.query('select remind_days_before from "reminder" where event_public_id = $1', [results.public_id])
+    results['remind_days_before'] = reminders.rows
+    return new Event(results)
 }
 
 async function getEventById(id) {

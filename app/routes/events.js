@@ -17,7 +17,9 @@ router.get("/", auth.checkAuthenticated,  async (req, res) => {
 })
 
 router.get("/:public_id", auth.checkAuthenticated,  async (req, res) => {
+    console.log(req.params.public_id)
     const event = await getEventByPublicId(req.params.public_id)
+    
     if (event.length === 0) {
         req.flash('error', 'This event does not exist')
         return res.redirect('/events')

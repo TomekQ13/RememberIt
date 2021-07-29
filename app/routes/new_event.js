@@ -30,7 +30,6 @@ router.post("/",  async (req, res) => {
         console.error(e)
         return res.redirect('/events')
     }
-
     try {
         await event.save()
     } catch (e) {

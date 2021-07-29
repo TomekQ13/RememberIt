@@ -13,33 +13,34 @@ router.get("/:public_id", auth.checkAuthenticated,  async (req, res) => {
         console.error(e)
         return res.redirect('events')
     }
+    console.log(existing_event)
     res.render('event/new_event', {repeat: repeat_labels.rows.map(el => el.unnest), existing_event: existing_event})
 
 })
 
 router.post("/",  async (req, res) => {
-    try {
-        var event = new Event({
-            'user_id': req.user.id,
-            'name': req.body.name,
-            'first_date': req.body.first_date,
-            'repeat': req.body.repeat,
-            'description': req.body['description'],
-            'remind_days_before': req.body.remind_days_before
-        })
-    } catch (e) {
-        console.error(e)
-        return res.redirect('/events')
-    }
+    // try {
+    //     var event = new Event({
+    //         'user_id': req.user.id,
+    //         'name': req.body.name,
+    //         'first_date': req.body.first_date,
+    //         'repeat': req.body.repeat,
+    //         'description': req.body['description'],
+    //         'remind_days_before': req.body.remind_days_before
+    //     })
+    // } catch (e) {
+    //     console.error(e)
+    //     return res.redirect('/events')
+    // }
 
-    try {
-        await event.save()
-    } catch (e) {
-        console.error(e)
-        return res.redirect('/events')
-    }
+    // try {
+    //     await event.save()
+    // } catch (e) {
+    //     console.error(e)
+    //     return res.redirect('/events')
+    // }
 
-    return res.redirect(`/events/${event.public_id}`)
+    // return res.redirect(`/events/${event.public_id}`)
 })
 
 module.exports = router
