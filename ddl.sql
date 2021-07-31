@@ -1,20 +1,6 @@
 drop type repeat;
 create type repeat as enum ('never', 'daily', 'weekly', 'monthly', 'yearly');
 
-drop table "event";
-create table "event" (
-	id integer primary key generated always as identity,
-    public_id varchar(64) not null,
-	insert_dttm timestamp not null default now(),
-    user_id integer not null,
-	name varchar(64) not null,
-    description varchar(1024),
-	first_date date not null,
-	repeat repeat not null
-);
-
---create table "reminder"
-
 drop table "user";
 create table "user" (
 	id integer primary key generated always as identity,
@@ -25,6 +11,20 @@ create table "user" (
 	name varchar(64)
 );
 
+drop table "event";
+create table "event" (
+	id integer primary key generated always as identity,
+    public_id varchar(64) not null,
+	insert_dttm timestamp not null default now(),
+    update_dttm timestamp,
+    user_id integer not null,
+	name varchar(64) not null,
+    description varchar(1024),
+	first_date date not null,
+	repeat repeat not null,
+    constraint fk_event_user foreign key(user_id) references user(id) on delete cascade
+);
+
 drop table "reminder";
 create table "reminder" (
 	id integer primary key generated always as identity,
@@ -32,7 +32,8 @@ create table "reminder" (
 	update_dttm timestamp,
 	event_id integer not null,
 	remind_days_before integer not null,
-	check (remind_days_before between 1 and 365)
+	check (remind_days_before between 1 and 365),
+    constraint fk_reminder_event foreign key(event_id) references event(customer_id) on delete cascade
 );
 
 

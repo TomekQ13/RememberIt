@@ -1,17 +1,24 @@
-<h2 class="">New event</h2>
+<h2 class="">
+    <% if (existing_event) { %>
+        Edit event
+    <% } else { %>
+        New event
+    <% } %>
+</h2>
 <form
     <% if (existing_event['public_id']) { %>
         action="/edit_event/<%- existing_event.public_id %>"
     <% } else { %>
-        action="/new_event" method="POST">
+        action="/new_event" 
     <% } %>
+        method="POST">
     <div class="">
         <label for="name">Name of the event</label>
         <input type="text" id="name" name="name" value="<%= existing_event['name'] %>"  required>
     </div>
     <div class="">
         <label for="description">Description</label>
-        <input type="text" id="description" name="description" value="<%= existing_event['description'] %>" required>
+        <input type="text" id="description" name="description" value="<%= existing_event['description'] %>">
     </div>
     <div class="">
         <label for="first_date">Date of the event</label>
@@ -31,7 +38,7 @@
         <% existing_event.remind_days_before.forEach(element => { %>
             <div class="">
                 <label for="remind_days_before">How many days before would you like to get a reminder?</label>
-                <input type="range" id="remind_days_before" name="remind_days_before" min="1" max="365" required value="<%= element %> ">
+                <input type="range" id="remind_days_before" name="remind_days_before" min="1" max="365" required value="<%= element.remind_days_before %>">
             </div>
         <% }) %>
     <% } else { %>

@@ -18,29 +18,24 @@ router.get("/:public_id", auth.checkAuthenticated,  async (req, res) => {
 
 })
 
-router.post("/",  async (req, res) => {
-    // try {
-    //     var event = new Event({
-    //         'user_id': req.user.id,
-    //         'name': req.body.name,
-    //         'first_date': req.body.first_date,
-    //         'repeat': req.body.repeat,
-    //         'description': req.body['description'],
-    //         'remind_days_before': req.body.remind_days_before
-    //     })
-    // } catch (e) {
-    //     console.error(e)
-    //     return res.redirect('/events')
-    // }
+router.post("/:public_id", auth.checkAuthenticated, async (req, res) => {
+    try {
+        var event = new Event({
+            'public_id': req.params.public_id,
+            'user_id': req.user.id,
+            'name': req.body.name,
+            'first_date': req.body.first_date,
+            'repeat': req.body.repeat,
+            'description': req.body['description'],
+            'remind_days_before': req.body.remind_days_before
+        })
+        event.updateEvent()
+    } catch (e) {
+        console.error(e)
+        return res.redirect('/events')
+    }
 
-    // try {
-    //     await event.save()
-    // } catch (e) {
-    //     console.error(e)
-    //     return res.redirect('/events')
-    // }
-
-    // return res.redirect(`/events/${event.public_id}`)
+    return res.redirect(`/events/${event.public_id}`)
 })
 
 module.exports = router

@@ -16,17 +16,17 @@ class Event {
         }
     }
 
-    async save_reminder() {
+    async saveReminder() {
         for (const remind_days in this.remind_days_before) {
             await client.query(
                 'insert into "reminder" (event_public_id, remind_days_before) values ($1, $2)',
                 [this.public_id, this.remind_days_before[remind_days]]
             )
-            console.log(`Reminder with days ${remind_days} for event with public_id ${this.public_id} saved successfully`)
+            console.log(`Reminder with days ${this.remind_days_before[remind_days]} for event with public_id ${this.public_id} saved successfully`)
         }
     }
 
-    async save_event() {
+    async saveEvent() {
         await client.query(
             'insert into "event" (public_id, user_id, name, first_date, repeat, description) values ($1, $2, $3, $4, $5, $6)',
             [this.public_id, this.user_id, this.name, this.first_date, this.repeat, this.description]
@@ -34,9 +34,27 @@ class Event {
         console.log(`Event with name ${this.name} and public_id ${this.public_id} saved successfully as a new event`)
     }
 
-    async save() {
-        await this.save_reminder()        
-        await this.save_event()         
+    async deleteReminder() {
+        await client.query(
+            'delete from "reminder" where event_public_id = $1',
+            [this.public_id]
+        )
+        console.log(`Reminders for event with public_id ${this.public_id} deleted`)
+    }
+
+    async save() {              
+        await this.saveEvent()
+        await this.saveReminder()
+    }
+
+    async updateEvent() {
+        await client.query(
+            'update "event" set name = $1, description = $2, first_date = $3, repeat = $4 where public_id = $5 ',
+            [this.name, this.description, this.first_date, this.repeat, this.public_id]             
+        )
+        console.log(`Event with name ${this.name} and public_id ${this.public_id} updated successfully`)
+        await this.deleteReminder()        
+        await this.saveReminder()
     }
 
     async delete() {
