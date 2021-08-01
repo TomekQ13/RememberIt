@@ -1,8 +1,9 @@
 const express = require('express')
 const router = express.Router()
 const client = require('../db.js')
-const {Event, getEventById, getEventByPublicId, deleteEventByPublicId, getAllEvents} = require('../models/event')
+const {Event} = require('../models/event')
 const auth = require('../auth')
+const {flashMsg} = require('../flashMessages.js')
 
 router.get("/", auth.checkAuthenticated,  async (req, res) => {
     try {
@@ -26,14 +27,10 @@ router.post("/",  async (req, res) => {
             'description': req.body['description'],
             'remind_days_before': req.body.remind_days_before
         })
-    } catch (e) {
-        console.error(e)
-        return res.redirect('/events')
-    }
-    try {
         await event.save()
     } catch (e) {
         console.error(e)
+
         return res.redirect('/events')
     }
 

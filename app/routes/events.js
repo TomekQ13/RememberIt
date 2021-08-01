@@ -1,16 +1,17 @@
 const express = require('express')
 const router = express.Router()
 const client = require('../db.js')
-const {Event, getEventById, getEventByPublicId, deleteEventByPublicId, getAllEvents} = require('../models/event')
+const {getEventByPublicId, deleteEventByPublicId, getAllEvents} = require('../models/event')
 const auth = require('../auth')
+const {flashMsg} = require('../flashMessages.js')
 
 
 router.get("/", auth.checkAuthenticated,  async (req, res) => {
     try {
-        var events = await getAllEvents()        
+        var events = await getAllEvents(req.user.id)        
     } catch (e) {
-        console.log(e)
-        req.flash('error', 'There was an error. Please try again.')
+        console.error(e)
+        flashMsg.generalError(req)
         return res.redirect('events')
     } 
     return res.render('event/events', {events: events}) 
@@ -31,7 +32,7 @@ router.delete("/:public_id", auth.checkAuthenticated,  async (req, res) => {
     try {
         await deleteEventByPublicId(req.params.public_id)
     } catch (e) {
-        req.flash('error', 'There was an error. Please try again.')
+        flashMsg.generalError(req)
         return res.redirect('/events')
     }
     req.flash('success', 'Event deleted successfully')
