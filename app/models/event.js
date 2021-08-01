@@ -92,4 +92,9 @@ async function getAllEvents(user_id=undefined) {
     return r.rows
 }
 
+async function getEventsNextDays(days) {
+    // here probably it makes sense to store the occurences in a materialized view that is refreshed every day
+    client.query('select * from "event" where first_date')
+}
+
 module.exports = {Event, getEventById, getEventByPublicId, deleteEventByPublicId, getAllEvents}
