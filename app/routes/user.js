@@ -1,8 +1,8 @@
 const express = require('express')
 const router = express.Router()
-const {User, getUserByEmail, getUserById} = require('../models/user')
+const {getUserByEmail} = require('../models/user')
 const bcrypt = require('bcrypt')
-const flash = require('express-flash');
+
 const auth = require('../auth')
 const passport = require('passport')
 
