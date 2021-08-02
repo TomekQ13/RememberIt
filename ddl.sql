@@ -36,4 +36,14 @@ create table "reminder" (
     constraint fk_reminder_event foreign key(event_id) references event(customer_id) on delete cascade
 );
 
+create materialized view "occurence" as (
+	select e.id as event_id, e.public_id as event_public_id, user_id, first_date, repeat, r.remind_days_before,
+		first_date - 
+	from event e
+	left join reminder r
+	on e.public_id = r.event_public_id
+	
+	
 
+);
+select * from occurence;
