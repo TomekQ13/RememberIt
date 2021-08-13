@@ -1,7 +1,6 @@
 const nodemailer = require('nodemailer')
-const Mail = require('nodemailer/lib/mailer')
 
-async function main() {
+function makeTransporter() {
     let transporter = nodemailer.createTransport({
         host: 'mail.privateemail.com',
         port: 465,
@@ -11,16 +10,18 @@ async function main() {
             pass: ''
         }
     })
-
-    let info = await transporter.sendMail({
-        from: '"Never Forget It!" <contact@neverforgetit.net>', // sender address
-        to: "kuczak.tomasz@gmail.com", // list of receivers
-        subject: "Hello ✔", // Subject line
-        text: "Hello world?", // plain text body
-        html: "<b>Hello world?</b>", // html body
-      });
-
-      console.log("Message sent: %s", info.messageId);
+    return transporter;
 }
+
+let info = await transporter.sendMail({
+    from: '"Never Forget It!" <contact@neverforgetit.net>', // sender address
+    to: "julia.urbaniak@outlook.com", // list of receivers
+    subject: "Hello ✔", // Subject line
+    text: "Lofki", // plain text body
+    html: "<b>Lofki</b>", // html body
+    }); 
+
+    console.log("Message sent: %s", info.messageId);
+
 
 main()
