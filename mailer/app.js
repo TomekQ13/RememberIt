@@ -1,27 +1,6 @@
-const nodemailer = require('nodemailer')
+const {sendReminder} = require('./mails.js')
+const {client} = require('./db.js')
 
-function makeTransporter() {
-    let transporter = nodemailer.createTransport({
-        host: 'mail.privateemail.com',
-        port: 465,
-        secure: true,
-        auth: {
-            user: 'contact@neverforgetit.net',
-            pass: ''
-        }
-    })
-    return transporter;
+async function getReminders(client) {
+    return await client.query('select * from "occurence"')
 }
-
-let info = await transporter.sendMail({
-    from: '"Never Forget It!" <contact@neverforgetit.net>', // sender address
-    to: "julia.urbaniak@outlook.com", // list of receivers
-    subject: "Hello ✔", // Subject line
-    text: "Lofki", // plain text body
-    html: "<b>Lofki</b>", // html body
-    }); 
-
-    console.log("Message sent: %s", info.messageId);
-
-
-main()
