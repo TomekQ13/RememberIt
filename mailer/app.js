@@ -7,13 +7,20 @@ function sleep(ms) {
     });
   }  
 
+
+
 async function main() {
     const transporter = makeTransporter()
     while (true) {
-        const reminders = await getReminders()
-        reminders.forEach(el => {
-            sendReminder(transporter, el.name, el.date, el.email)
-        });
+        let d = new Date();
+        let n = d.getHours();
+        console.log(`Current hour is ${n}`)
+        if (n === 22) {
+            const reminders = await getReminders()
+            reminders.forEach(el => {
+                sendReminder(transporter, el.name, el.date, el.email)
+            });
+        }
         await sleep(60*100)
     }
 }
