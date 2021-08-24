@@ -1,6 +1,20 @@
-const {sendReminder} = require('./mails.js')
-const {client} = require('./db.js')
+const {makeTransporter, sendReminder} = require('./mails.js')
+const {getReminders} = require('./db.js')
 
-async function getReminders(client) {
-    return await client.query('select * from "occurence"')
+function sleep(ms) {
+    return new Promise((resolve) => {
+      setTimeout(resolve, ms);
+    });
+  }  
+
+async function main() {
+    const transporter = makeTransporter()
+    while (true) {
+        const reminders = await getReminders()
+        reminders.forEach(el => {
+            sendReminder(transporter, el.name, el.date, el.email)
+        });
+        await sleep(60*100)
+    }
 }
+main()

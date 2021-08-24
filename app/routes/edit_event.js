@@ -3,7 +3,11 @@ const router = express.Router()
 const client = require('../db.js')
 const {Event, getEventById, getEventByPublicId, deleteEventByPublicId, getAllEvents} = require('../models/event')
 const auth = require('../auth')
-const {flashMsg} = require('../flashMessages.js')
+const msgFlasher = require('../flashMessages.js')
+
+
+const flashMsg = new msgFlasher()
+
 
 router.get("/:public_id", auth.checkAuthenticated,  async (req, res) => {
     try {
@@ -25,7 +29,7 @@ router.get("/:public_id", auth.checkAuthenticated,  async (req, res) => {
 router.post("/:public_id", auth.checkAuthenticated, async (req, res) => {
     // validate if the user making the request is the user who owns the events
     try {
-        const existing_event = getEventByPublicId(req.params.public_id)
+        const existing_event = await getEventByPublicId(req.params.public_id)
         if (!existing_event.user_id == req.user.id) {
             flashMsg.insufficientPrivileges(req)
             return res.redirect('/events')

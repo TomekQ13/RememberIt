@@ -10,6 +10,12 @@ const client = new Client({
 
 client.connect()
 
+
 const res = client.query('select now()').then(res => console.log('Connected to database ' + res.rows[0].now))
 
-module.exports = client
+async function getReminders(client) {
+    const reminders =  await client.query('select * from "occurence"')
+    return reminders.rows    
+}
+
+module.exports = {client, getReminders}
