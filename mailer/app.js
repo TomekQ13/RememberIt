@@ -1,5 +1,5 @@
 const {makeTransporter, sendReminder} = require('./mails.js')
-const {getReminders} = require('./db.js')
+const {client, getReminders, updateReminderSentDttm} = require('./db.js')
 
 function sleep(ms) {
     return new Promise((resolve) => {
@@ -15,10 +15,14 @@ async function main() {
         let d = new Date();
         let n = d.getHours();
         console.log(`Current hour is ${n}`)
-        if (n === 22) {
-            const reminders = await getReminders()
-            reminders.forEach(el => {
-                sendReminder(transporter, el.name, el.date, el.email)
+        if (n === 23) {
+            await client.query('call insert_occurences(1)')
+            const reminders = await getReminders(client)
+            console.log(`Selected reminders ${reminders}`)
+            reminders.forEach(async el => {
+                await sendReminder(transporter, el.name, el.date, el.email)
+                await updateReminderSentDttm(client, el.id)
+
             });
         }
         await sleep(60*100)

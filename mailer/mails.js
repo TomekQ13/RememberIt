@@ -14,7 +14,7 @@ function makeTransporter() {
     return transporter;
 }
 
-async function sendEmail(to, subject, text, html, transporter = makeTransporter(), from = '"Never Forget It!" <contact@neverforgetit.net>') {
+async function sendEmail(to, subject, text, html, transporter, from = '"Never Forget It!" <contact@neverforgetit.net>') {
     try {
         let r = await transporter.sendMail({
             from: from, // sender address
@@ -23,7 +23,7 @@ async function sendEmail(to, subject, text, html, transporter = makeTransporter(
             text: text, // plain text body
             html: html, // html body
             }); 
-        console.log("Message sent: %s", info.messageId);
+        console.log("Message sent: %s", r.messageId);
     } catch (e) {
         console.log('There was an error while sending the email')
         console.error(e)
@@ -40,17 +40,18 @@ The event ${eventName} is coming on ${eventDate}.
 `
     try {
         await sendEmail(
-            transporter = transporter,
-            to = to,
-            subject = subject,
-            text = text,
-            html = html
+            to,
+            subject,
+            text,
+            html,
+            transporter
         )
     } catch (e) {
         console.log('There was an error while sending the email')
         console.error(e)
     }
 }
+
 
 module.exports = {makeTransporter, sendEmail, sendReminder}
 
