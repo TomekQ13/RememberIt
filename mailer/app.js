@@ -20,7 +20,7 @@ async function main() {
             await updateReminderSentDttm(client, el.id)
 
         });
-        await sleep(60*100)
+        await sleep(10*60*100)
     }
 }
 main()
