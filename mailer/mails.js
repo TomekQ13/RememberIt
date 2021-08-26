@@ -46,6 +46,7 @@ The event ${eventName} is coming on ${eventDate}.
             html,
             transporter
         )
+        console.log(`Message about event ${eventName} on ${eventDate} sent.`)
     } catch (e) {
         console.log('There was an error while sending the email')
         console.error(e)
