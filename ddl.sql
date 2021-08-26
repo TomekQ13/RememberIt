@@ -125,6 +125,63 @@ with recursive monthly_occurence as (
 		)
 ;
 $$;
+drop view next_year_occurences;
+create or replace view next_year_occurences as 
+with recursive monthly_occurence as (
+	select e.id, e.public_id, e.name, e.description, e.user_id, e.first_date as date, e.repeat
+	from "event" e
+	where e.repeat = 'monthly'
+ 	and e.first_date <= current_date + interval '1 year'
+	union
+	select e.id, e.public_id, e.name, e.description, e.user_id, date(e.date + interval '1 month') as date, e.repeat
+	from "monthly_occurence" e
+ 	where e.date + interval '1 month' <= current_date + interval '1 year'
+), weekly_occurence as (
+	select e.id, e.public_id, e.name, e.description, e.user_id, e.first_date as date, e.repeat
+	from "event" e
+	where e.repeat = 'weekly'
+ 	and e.first_date <= current_date + interval '1 year'
+	union
+	select e.id, e.public_id, e.name, e.description, e.user_id, date(e.date + interval '1 week') as date, e.repeat
+	from "weekly_occurence" e
+ 	where e.date + interval '1 week' <= current_date + interval '1 year'
+), daily_occurence as (
+	select e.id, e.public_id, e.name, e.description, e.user_id, e.first_date as date, e.repeat
+	from "event" e
+	where e.repeat = 'daily'
+ 	and e.first_date <= current_date + interval '1 year'
+	union
+	select e.id, e.public_id, e.name, e.description, e.user_id, date(e.date + interval '1 day') as date, e.repeat
+	from "daily_occurence" e
+ 	where e.date + interval '1 day' <= current_date + interval '1 year'
+), yearly_occurence as (
+	select e.id, e.public_id, e.name, e.description, e.user_id, e.first_date as date, e.repeat
+	from "event" e
+	where e.repeat = 'yearly'
+ 	and e.first_date <= current_date + interval '1 year'
+	union
+	select e.id, e.public_id, e.name, e.description, e.user_id, date(e.date + interval '1 year') as date, e.repeat
+	from "yearly_occurence" e
+ 	where e.date + interval '1 year' <= current_date + interval '1 year'
+)
+	select *
+	from yearly_occurence
+	union all
+	select *
+	from monthly_occurence
+	union all
+	select *
+	from weekly_occurence
+	union all
+	select *
+	from daily_occurence
+	union all
+	select e.id, e.public_id, e.name, e.description, e.user_id, e.first_date as date, e.repeat
+	from "event" e
+	where e.repeat = 'never';
+
+	
+
 	
 	
 	
