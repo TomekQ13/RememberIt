@@ -15,10 +15,10 @@ async function main() {
         let d = new Date();
         let n = d.getHours();
         console.log(`Current hour is ${n}`)
-        if (n === 23) {
+        if (n === 20) {
             await client.query('call insert_occurences(1)')
             const reminders = await getReminders(client)
-            console.log(`Selected reminders ${reminders}`)
+            console.log(`Selected  ${reminders.length} reminders`)
             reminders.forEach(async el => {
                 await sendReminder(transporter, el.name, el.date, el.email)
                 await updateReminderSentDttm(client, el.id)

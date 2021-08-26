@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const {getUserByEmail} = require('../models/user')
+const {User} = require('../models/user')
 const bcrypt = require('bcrypt')
 
 const auth = require('../auth')
@@ -37,5 +37,11 @@ router.post("/login", auth.checkNotAuthenticated, passport.authenticate('local',
     failureRedirect: '/user/login',
     failureFlash: true
 }));
+
+router.post('/logout', auth.checkAuthenticated, (req, res) => {
+    req.logOut();
+    res.redirect('/user/login');
+});
+  
 
 module.exports = router

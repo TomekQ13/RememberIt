@@ -116,6 +116,13 @@ with recursive monthly_occurence as (
 		left join "user" u
 		on e.user_id = u.id		
  		where e.date - r.remind_days_before >= current_date
+		and not exists (
+			select 1
+			from occurence o
+			where
+				e.date - r.remind_days_before = o.reminder_date
+				and  e.public_id = o.public_id
+		)
 ;
 $$;
 	
