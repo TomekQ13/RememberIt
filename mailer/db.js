@@ -14,7 +14,7 @@ client.connect()
 const res = client.query('select now()').then(res => console.log('Connected to database ' + res.rows[0].now))
 
 async function getReminders(client) {
-    const reminders =  await client.query('select * from "occurence" where reminder_date = current_date')
+    const reminders =  await client.query('select * from "occurence" where reminder_date = current_date and sent_dttm is null')
     return reminders.rows    
 }
 
