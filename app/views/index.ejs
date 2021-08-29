@@ -1,1 +1,13 @@
 <h1>Hello</h1>
+<div>
+    <h2>
+        Events in the next 7 days
+    </h2>
+    <% events7Days.forEach(element => { %>
+        <div>
+            <h3><%= element.name %></h3>
+            <p><%= element.event_date %></p>
+            <p><%= element.description %> </p>
+        </div>
+    <% }) %>
+</div>

@@ -1,7 +1,7 @@
-drop type repeat;
+--drop type repeat;
 create type repeat as enum ('never', 'daily', 'weekly', 'monthly', 'yearly');
 
-drop table "user";
+--drop table "user";
 create table "user" (
 	id integer primary key generated always as identity,
 	insert_dttm timestamp not null default now(),
@@ -11,7 +11,7 @@ create table "user" (
 	name varchar(64)
 );
 
-drop table "event";
+--drop table "event";
 create table "event" (
 	id integer primary key generated always as identity,
     public_id varchar(64) not null,
@@ -25,7 +25,7 @@ create table "event" (
     constraint fk_event_user foreign key(user_id) references user(id) on delete cascade
 );
 
-drop table "reminder";
+--drop table "reminder";
 create table "reminder" (
 	id integer primary key generated always as identity,
 	insert_dttm timestamp not null default now(),
@@ -36,7 +36,7 @@ create table "reminder" (
     constraint fk_reminder_event foreign key(event_id) references event(customer_id) on delete cascade
 );
 
-drop table occurence;
+--drop table occurence;
 create table occurence (
 	id integer primary key generated always as identity,
 	public_id varchar(64) not null,
@@ -128,41 +128,41 @@ $$;
 drop view next_year_occurences;
 create or replace view next_year_occurences as 
 with recursive monthly_occurence as (
-	select e.id, e.public_id, e.name, e.description, e.user_id, e.first_date as date, e.repeat
+	select e.id, e.public_id, e.name, e.description, e.user_id, e.first_date as event_date, e.repeat
 	from "event" e
 	where e.repeat = 'monthly'
  	and e.first_date <= current_date + interval '1 year'
 	union
-	select e.id, e.public_id, e.name, e.description, e.user_id, date(e.date + interval '1 month') as date, e.repeat
+	select e.id, e.public_id, e.name, e.description, e.user_id, date(e.event_date + interval '1 month') as event_date, e.repeat
 	from "monthly_occurence" e
- 	where e.date + interval '1 month' <= current_date + interval '1 year'
+ 	where e.event_date + interval '1 month' <= current_date + interval '1 year'
 ), weekly_occurence as (
-	select e.id, e.public_id, e.name, e.description, e.user_id, e.first_date as date, e.repeat
+	select e.id, e.public_id, e.name, e.description, e.user_id, e.first_date as event_date, e.repeat
 	from "event" e
 	where e.repeat = 'weekly'
  	and e.first_date <= current_date + interval '1 year'
 	union
-	select e.id, e.public_id, e.name, e.description, e.user_id, date(e.date + interval '1 week') as date, e.repeat
+	select e.id, e.public_id, e.name, e.description, e.user_id, date(e.event_date + interval '1 week') as event_date, e.repeat
 	from "weekly_occurence" e
- 	where e.date + interval '1 week' <= current_date + interval '1 year'
+ 	where e.event_date + interval '1 week' <= current_date + interval '1 year'
 ), daily_occurence as (
-	select e.id, e.public_id, e.name, e.description, e.user_id, e.first_date as date, e.repeat
+	select e.id, e.public_id, e.name, e.description, e.user_id, e.first_date as event_date, e.repeat
 	from "event" e
 	where e.repeat = 'daily'
  	and e.first_date <= current_date + interval '1 year'
 	union
-	select e.id, e.public_id, e.name, e.description, e.user_id, date(e.date + interval '1 day') as date, e.repeat
+	select e.id, e.public_id, e.name, e.description, e.user_id, date(e.event_date + interval '1 day') as event_date, e.repeat
 	from "daily_occurence" e
- 	where e.date + interval '1 day' <= current_date + interval '1 year'
+ 	where e.event_date + interval '1 day' <= current_date + interval '1 year'
 ), yearly_occurence as (
-	select e.id, e.public_id, e.name, e.description, e.user_id, e.first_date as date, e.repeat
+	select e.id, e.public_id, e.name, e.description, e.user_id, e.first_date as event_date, e.repeat
 	from "event" e
 	where e.repeat = 'yearly'
  	and e.first_date <= current_date + interval '1 year'
 	union
-	select e.id, e.public_id, e.name, e.description, e.user_id, date(e.date + interval '1 year') as date, e.repeat
+	select e.id, e.public_id, e.name, e.description, e.user_id, date(e.event_date + interval '1 year') as event_date, e.repeat
 	from "yearly_occurence" e
- 	where e.date + interval '1 year' <= current_date + interval '1 year'
+ 	where e.event_date + interval '1 year' <= current_date + interval '1 year'
 )
 	select *
 	from yearly_occurence
@@ -176,7 +176,7 @@ with recursive monthly_occurence as (
 	select *
 	from daily_occurence
 	union all
-	select e.id, e.public_id, e.name, e.description, e.user_id, e.first_date as date, e.repeat
+	select e.id, e.public_id, e.name, e.description, e.user_id, e.first_date as event_date, e.repeat
 	from "event" e
 	where e.repeat = 'never';
 
