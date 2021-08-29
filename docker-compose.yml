@@ -23,6 +23,4 @@ services:
             context: ./mailer/
         volumes: 
             - ./mailer:/mailer
-        ports:
-            - '3000:3000'
         restart: always
