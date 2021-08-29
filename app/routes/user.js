@@ -6,11 +6,11 @@ const bcrypt = require('bcrypt')
 const auth = require('../auth')
 const passport = require('passport')
 
-router.get("/register", async (req, res) => {
+router.get("/register", auth.checkNotAuthenticated, async (req, res) => {
      res.render('user/register')
 })
 
-router.post("/register", async (req, res) => { 
+router.post("/register", auth.checkNotAuthenticated, async (req, res) => { 
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
     try {
         const user = new User({
