@@ -27,7 +27,7 @@ async function sendEmail(to, subject, text, html, transporter, from = '"Never Fo
     } catch (e) {
         console.log('There was an error while sending the email')
         console.error(e)
-    }    
+    }
 }
 
 async function sendReminder(transporter, eventName, eventDate, to) {
