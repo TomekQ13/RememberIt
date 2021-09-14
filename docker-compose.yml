@@ -23,8 +23,8 @@ services:
         restart: always
         depends_on: 
             - 'postgres'
-        environment: 
-            - SECRET_KEY=${SECRET_KEY}
+        # environment: 
+        #     - SECRET_KEY=${SECRET_KEY}
     mailer:
         build:
             context: ./mailer/
