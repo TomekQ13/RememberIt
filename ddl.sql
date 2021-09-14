@@ -13,8 +13,8 @@ create table "user" (
 
 --drop table "event";
 create table "event" (
-	id integer primary key generated always as identity,
-    public_id varchar(64) not null,
+	id integer generated always as identity,
+    public_id varchar(64) not null primary key,
 	insert_dttm timestamp not null default now(),
     update_dttm timestamp,
     user_id integer not null,
@@ -30,11 +30,10 @@ create table "reminder" (
 	id integer primary key generated always as identity,
 	insert_dttm timestamp not null default now(),
 	update_dttm timestamp,
-	event_id integer not null,
 	event_public_id varchar(64) not null,
 	remind_days_before integer not null,
 	check (remind_days_before between 1 and 365),
-    constraint fk_reminder_event foreign key(event_id) references event(id) on delete cascade
+    constraint fk_reminder_event foreign key(event_public_id) references event(public_id) on delete cascade
 );
 
 --drop table occurence;
