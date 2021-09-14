@@ -22,7 +22,7 @@ create table "event" (
     description varchar(1024),
 	first_date date not null,
 	repeat repeat not null,
-    constraint fk_event_user foreign key(user_id) references user(id) on delete cascade
+    constraint fk_event_user foreign key(user_id) references "user"(id) on delete cascade
 );
 
 --drop table "reminder";
@@ -31,9 +31,10 @@ create table "reminder" (
 	insert_dttm timestamp not null default now(),
 	update_dttm timestamp,
 	event_id integer not null,
+	event_public_id varchar(64) not null,
 	remind_days_before integer not null,
 	check (remind_days_before between 1 and 365),
-    constraint fk_reminder_event foreign key(event_id) references event(customer_id) on delete cascade
+    constraint fk_reminder_event foreign key(event_id) references event(id) on delete cascade
 );
 
 --drop table occurence;
@@ -47,7 +48,8 @@ create table occurence (
 	repeat repeat not null,
 	remind_days_before integer not null,
 	reminder_date date not null,
-	email varchar(128) not null
+	email varchar(128) not null,
+	sent_dttm timestamp
 );
 
 CREATE OR REPLACE PROCEDURE insert_occurences(period_days integer)
@@ -125,7 +127,7 @@ with recursive monthly_occurence as (
 		)
 ;
 $$;
-drop view next_year_occurences;
+--drop view next_year_occurences;
 create or replace view next_year_occurences as 
 with recursive monthly_occurence as (
 	select e.id, e.public_id, e.name, e.description, e.user_id, e.first_date as event_date, e.repeat
