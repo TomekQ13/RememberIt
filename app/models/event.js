@@ -93,7 +93,6 @@ async function getAllEvents(user_id=undefined) {
 }
 
 async function getEventsNextDays(days, user_id) {
-    // here probably it makes sense to store the occurences in a materialized view that is refreshed every day
     const eventsNextDays = await client.query("select * from next_year_occurences where user_id = $1 and event_date <= current_date + interval '1 days' * $2", [user_id, days])
     return eventsNextDays.rows
 }
