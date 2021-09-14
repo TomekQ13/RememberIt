@@ -38,7 +38,7 @@ router.post("/login", auth.checkNotAuthenticated, passport.authenticate('local',
     failureFlash: true
 }));
 
-router.post('/logout', auth.checkAuthenticated, (req, res) => {
+router.get('/logout', auth.checkAuthenticated, (req, res) => {    
     req.logOut();
     res.redirect('/user/login');
 });

@@ -1,24 +1,13 @@
-<!-- <nav>
-    <a href="/">Main page</a>
-    <a href="/new_event">New Event</a>
-    <a href="/events">All events</a>
-    <a href="/user/login">Login</a>
-    <form action='/user/logout' method='POST'>
-        <button type="submit" class="btn">Wyloguj</button>
-    </form>
-    <a href="/user/register">Register</a>
-</nav> -->
-
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container-fluid">
-        <a class="navbar-brand" href="#">Main page</a>
+        <a class="navbar-brand" href="">Main page</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="/new_event">New Event</a>
+                    <a class="nav-link" aria-current="page" href="/new_event">New Event</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="/events">All events</a>
@@ -27,9 +16,10 @@
                     <a class="nav-link" href="/user/login">Login</a>
                 </li>
                 <li class="nav-item">
-                    <form class="nav-link" action='/user/logout' method='POST'>
+                    <!-- <form action='/user/logout' method='POST'>
                         <button type="submit" class="nav-item">Logout</button>
-                    </form>
+                    </form> -->
+                    <a class="nav-link" href="/user/logout">Logout</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="/user/register">Register</a>

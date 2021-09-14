@@ -9,7 +9,6 @@ router.get("/", async (req, res) => {
     }
 
     const events7Days = await getEventsNextDays(7, req.user.id)
-    console.log(events7Days)
     res.render('index', {events7Days: events7Days})
     
 })
