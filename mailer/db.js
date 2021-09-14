@@ -19,8 +19,8 @@ async function getReminders(client) {
 }
 
 async function updateReminderSentDttm(client, reminderId) {
-    await client.query(`update occurence set sent_dttm = now() where id = ${reminderId}`)
-    console.log(`sent_dttm updated for reminderId = ${reminderId}`)
+    await client.query(`update occurence set update_dttm = now() where id = ${reminderId}`)
+    console.log(`update_dttm updated for reminderId = ${reminderId}`)
 }
 
 
