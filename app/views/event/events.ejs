@@ -1,9 +1,11 @@
-<h1>Events</h1>
-<% events.forEach(event => { %>
-  <div>
-      <a href="/events/<%= event.public_id %> "><h2><%= event.name %></h2></a>
-      <p>Date <%= event.first_date %></p>
-      <p>Repeat <%= event.repeat %></p>
-      <p><%= event.description %></p>                
-  </div>
-<% }) %>
+<div class="container">
+    <h1>Events</h1>
+    <% events.forEach(event => { %>
+    <div>
+        <a href="/events/<%= event.public_id %> "><h2><%= event.name %></h2></a>
+        <p>Date <%= event.first_date %></p>
+        <p>Repeat <%= event.repeat %></p>
+        <p><%= event.description %></p>                
+    </div>
+    <% }) %>
+</div>

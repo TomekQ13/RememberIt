@@ -1,11 +1,13 @@
-<h1>Event</h1>
-<div>
-    <h2><%= event.name %></h2>
-    <p>Date <%= event.first_date %></p>
-    <p>Repeat <%= event.repeat %></p>
-    <p><%= event.description %></p>                
+<div class="container">
+    <h1>Event</h1>
+    <div>
+        <h2><%= event.name %></h2>
+        <p>Date <%= event.first_date %></p>
+        <p>Repeat <%= event.repeat %></p>
+        <p><%= event.description %></p>                
+    </div>
+    <a href="/edit_event/<%= event.public_id %> ">Edit</a>
+    <form action="/events/<%= event.public_id %>?_method=DELETE" method="POST">
+        <button type="submit" >Delete</button>
+    </form>
 </div>
-<a href="/edit_event/<%= event.public_id %> ">Edit</a>
-<form action="/events/<%= event.public_id %>?_method=DELETE" method="POST">
-    <button type="submit" >Delete</button>
-</form>
