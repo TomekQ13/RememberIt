@@ -93,7 +93,13 @@ async function getAllEvents(user_id=undefined) {
 }
 
 async function getEventsNextDays(days, user_id) {
-    const eventsNextDays = await client.query("select * from next_year_occurences where user_id = $1 and event_date <= current_date + interval '1 days' * $2", [user_id, days])
+    const eventsNextDays = await client.query(
+        `select * 
+        from next_year_occurences 
+        where 
+            user_id = $1 
+            and event_date <= current_date + interval '1 days' * $2
+            and event_date >= current_date`, [user_id, days])
     return eventsNextDays.rows
 }
 
