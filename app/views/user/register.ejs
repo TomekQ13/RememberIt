@@ -1,20 +1,14 @@
 <div class="container">
     <h2 class="">Register</h2>
-    <form action="/user/register" method="POST">
-        <div class="">
-            <label for="email">Email</label>
-            <input type="email" id="email" name="email" required>
-        </div>
-        <div class="">
-            <label for="password">Password</label>
-            <input type="password" id="password" name="password" required>
-        </div>
-        <!-- <div class="">
-            <label for="password">Confirm password</label>
-            <input type="password" id="password" name="password" required>
-        </div> -->
-        <div>
-            <button type="submit" class="btn">Register</button>
-        </div>  
-    </form>
+ <form action="/user/register" method="POST">
+     <div class="form-group mb-2">
+       <label for="email">Email</label>
+       <input type="email" class="form-control mt-1" id="email" aria-describedby="emailHelp" placeholder="Enter email" name="email" required>
+     </div>
+     <div class="form-group mb-2">
+       <label for="password">Password</label>
+       <input type="password" class="form-control mt-1" id="password" placeholder="Enter password" name="password" required>
+     </div>
+     <button type="submit" class="btn btn-primary">Register</button>
+   </form>
 </div>
