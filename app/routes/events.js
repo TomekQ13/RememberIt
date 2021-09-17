@@ -14,7 +14,7 @@ router.get("/", auth.checkAuthenticated,  async (req, res) => {
         flashMsg.generalError(req)
         return res.redirect('events')
     } 
-    return res.render('event/events', {events: events}) 
+    return res.render('event/events', {events: events, isAuthenticated: true}) 
 })
 
 router.get("/:public_id", auth.checkAuthenticated,  async (req, res) => {
@@ -24,7 +24,7 @@ router.get("/:public_id", auth.checkAuthenticated,  async (req, res) => {
         req.flash('error', 'This event does not exist')
         return res.redirect('/events')
     }
-    res.render('event/event', {event: event})    
+    res.render('event/event', {event: event, isAuthenticated: true})    
 })
 
 router.delete("/:public_id", auth.checkAuthenticated,  async (req, res) => {

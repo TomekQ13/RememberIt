@@ -22,7 +22,7 @@ router.get("/:public_id", auth.checkAuthenticated,  async (req, res) => {
         flashMsg.insufficientPrivileges(req)
         return res.redirect('/events')
     }
-    res.render('event/new_event', {repeat: repeat_labels.rows.map(el => el.unnest), existing_event: existing_event})
+    res.render('event/new_event', {repeat: repeat_labels.rows.map(el => el.unnest), existing_event: existing_event, isAuthenticated: true})
 
 })
 
