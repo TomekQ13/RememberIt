@@ -9,12 +9,12 @@ router.get("/", async (req, res) => {
     }
 
     const events7Days = await getEventsNextDays(7, req.user.id)
-    res.render('index', {events7Days: events7Days})
+    res.render('index', {events7Days: events7Days, isAuthenticated: req.isAuthenticated()})
     
 })
 
 router.get("/about", (req, res) => {
-    res.render('about')
+    res.render('about', {isAuthenticated: req.isAuthenticated()})
 })
 
 module.exports = router

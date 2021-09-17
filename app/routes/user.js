@@ -7,7 +7,7 @@ const auth = require('../auth')
 const passport = require('passport')
 
 router.get("/register", auth.checkNotAuthenticated, async (req, res) => {
-     res.render('user/register')
+     res.render('user/register', {isAuthenticated: false})
 })
 
 router.post("/register", auth.checkNotAuthenticated, async (req, res) => { 
@@ -29,7 +29,7 @@ router.post("/register", auth.checkNotAuthenticated, async (req, res) => {
 })
 
 router.get("/login", auth.checkNotAuthenticated, async (req, res) => {
-    res.render('user/login')
+    res.render('user/login', {isAuthenticated: false})
 })
 
 router.post("/login", auth.checkNotAuthenticated, passport.authenticate('local', {
@@ -40,7 +40,7 @@ router.post("/login", auth.checkNotAuthenticated, passport.authenticate('local',
 
 router.get('/logout', auth.checkAuthenticated, (req, res) => {    
     req.logOut();
-    res.redirect('/user/login');
+    res.redirect('/user/login', {isAuthenticated: true});
 });
   
 
