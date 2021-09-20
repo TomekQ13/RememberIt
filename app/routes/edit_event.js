@@ -48,7 +48,8 @@ router.post("/:public_id", auth.checkAuthenticated, async (req, res) => {
             'first_date': req.body.first_date,
             'repeat': req.body.repeat,
             'description': req.body['description'],
-            'remind_days_before': req.body.remind_days_before
+            'remind_days_before_email': req.body['remind_days_before_email'],
+            'remind_days_before_sms': req.body['remind_days_before_sms']
         })
         event.updateEvent()
     } catch (e) {

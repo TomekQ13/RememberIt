@@ -3,7 +3,7 @@ const uuid = require('uuid')
 
 class Event {
     constructor(params) {
-        const required_params = ['user_id', 'name', 'first_date', 'repeat', 'remind_days_before']
+        const required_params = ['user_id', 'name', 'first_date', 'repeat']
         required_params.map(el => {
             if (params[el] == undefined) {
                 throw `${el} is missing and is required to create new Event object`
@@ -17,12 +17,20 @@ class Event {
     }
 
     async saveReminder() {
-        for (const remind_days in this.remind_days_before) {
+        for (const remind_days in this.remind_days_before_email) {
             await client.query(
-                'insert into "reminder" (event_public_id, remind_days_before) values ($1, $2)',
-                [this.public_id, this.remind_days_before[remind_days]]
+                'insert into "reminder" (event_public_id, remind_days_before, type) values ($1, $2, $3)',
+                [this.public_id, this.remind_days_before_email[remind_days], 'email']
             )
-            console.log(`Reminder with days ${this.remind_days_before[remind_days]} for event with public_id ${this.public_id} saved successfully`)
+            console.log(`Email reminder with days ${this.remind_days_before_email[remind_days]} for event with public_id ${this.public_id} saved successfully`)
+        }
+
+        for (const remind_days in this.remind_days_before_sms) {
+            await client.query(
+                'insert into "reminder" (event_public_id, remind_days_before, type) values ($1, $2, $3)',
+                [this.public_id, this.remind_days_before_sms[remind_days], 'sms']
+            )
+            console.log(`SMS reminder with days ${this.remind_days_before_sms[remind_days]} for event with public_id ${this.public_id} saved successfully`)
         }
     }
 

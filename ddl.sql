@@ -181,6 +181,15 @@ with recursive monthly_occurence as (
 	from "event" e
 	where e.repeat = 'never';
 
+
+create type reminder_type as enum ('sms', 'email');
+
+alter table reminder
+add column type reminder_type not null default 'email';
+
+alter table reminder
+alter column type drop default;
+
 	
 
 	

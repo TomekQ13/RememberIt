@@ -1,6 +1,6 @@
 <div class="container">
     <h2 class="">
-        <% if (existing_event) { %>
+        <% if (existing_event['public_id']) { %>
             Edit event
         <% } else { %>
             New event
@@ -13,43 +13,73 @@
             action="/new_event" 
         <% } %>
             method="POST">
-        <div class="">
+        <div class="form-group mb-2">
             <label for="name">Name of the event</label>
             <input type="text" id="name" name="name" value="<%= existing_event['name'] %>"  required>
         </div>
-        <div class="">
+        <div class="form-group mb-2">
             <label for="description">Description</label>
             <input type="text" id="description" name="description" value="<%= existing_event['description'] %>">
-        </div>
-        <div class="">
+        </div>        
+        <div class="form-group mb-2">
             <label for="first_date">Date of the event</label>
             <input type="date" id="first_date" name="first_date" <% if (existing_event['first_date']) { %>
             value="<%= existing_event['first_date'].toISOString().substring(0,10) %>"
             <% } %> required>
         </div>
-        <div class="">
-            <% repeat.forEach(element => { %>
-                <label for="<%= element %>"><%= element %></label>
-                <input type="radio" id="<%= element %>" name="repeat" value="<%= element %>" required <% if (element === existing_event.repeat) { %>
+        <label>How often does the event repeat?</label>        
+        <% repeat.forEach(element => { %>
+            <div class="form-group">                
+                <input type="radio" class="form-check-label" id="<%= element %>" name="repeat" value="<%= element %>" required <% if (element === existing_event.repeat) { %>
                     checked
                 <% } %>>
-            <% }) %>
+                <label for="<%= element %>" class="form-check-label"><%= element %></label>
+            </div>
+        <% }) %>    
+        <div class="form-group">
+            <label>What reminder would you like to get?</label>
         </div>
+
+        <!-- email reminder -->
+        <div class="form-group">
+            <input type="checkbox" id="reminderEmail" name="reminderEmail" checked>
+            <label for="reminderEmail">Email</label>
+        </div>        
         <% if (existing_event.remind_days_before) { %>
             <% existing_event.remind_days_before.forEach(element => { %>
-                <div class="">
-                    <label for="remind_days_before">How many days before would you like to get a reminder?</label>
-                    <input type="range" id="remind_days_before" name="remind_days_before" min="1" max="365" required value="<%= element.remind_days_before %>">
+                <div class="form-group mb-2">
+                    <label for="remind_days_before_email">How many days before would you like to get an email reminder?</label>
+                    <input type="range" id="remind_days_before_email" name="remind_days_before_email" min="1" max="365" required value="<%= element.remind_days_before %>">
                 </div>
             <% }) %>
         <% } else { %>
-            <div class="">
-                <label for="remind_days_before">How many days before would you like to get a reminder?</label>
-                <input type="range" id="remind_days_before" name="remind_days_before" min="1" max="365" required>
+            <div class="form-group mb-2">
+                <label for="remind_days_before_email">How many days before would you like to get an email reminder?</label>
+                <input type="number" id="remind_days_before_email" name="remind_days_before_email" min="1" max="365" required>
             </div>
         <% } %>
+
+        <!-- sms reminder -->
+        <div class="form-group">
+            <input type="checkbox" id="reminderSMS" name="reminderSMS">
+            <label for="reminderSMS">SMS</label>
+        </div>        
+        <% if (existing_event.remind_days_before) { %>
+            <% existing_event.remind_days_before.forEach(element => { %>
+                <div class="form-group mb-2">
+                    <label for="remind_days_before_sms">How many days before would you like to get an SMS reminder?</label>
+                    <input type="range" id="remind_days_before_sms" name="remind_days_before_sms" min="1" max="365" required value="<%= element.remind_days_before %>">
+                </div>
+            <% }) %>
+        <% } else { %>
+            <div class="form-group mb-2">
+                <label for="remind_days_before_sms">How many days before would you like to get an SMS reminder?</label>
+                <input type="number" id="remind_days_before_sms" name="remind_days_before_sms" min="1" max="365">
+            </div>
+        <% } %>
+
         <div>
-            <button type="submit" class="btn">Submit</button>
+            <button type="submit" class="btn btn-primary">Submit</button>
         </div>  
     </form>
 </div>
