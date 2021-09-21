@@ -91,7 +91,7 @@ with recursive monthly_occurence as (
 	from "yearly_occurence" e
 	where e.date + interval '1 year' <= current_date + interval '1 day' * period_days
 )
-	insert into occurence(public_id, user_id, name, description, date, repeat, remind_days_before, reminder_date, email, type)
+	insert into occurence(public_id, user_id, name, description, date, repeat, remind_days_before, reminder_date, email, type, phone)
 	select e.public_id,
 	e.user_id,
 	e.name,
@@ -101,7 +101,8 @@ with recursive monthly_occurence as (
 	r.remind_days_before,
 	e.date - r.remind_days_before as reminder_date,
 	u.email,
-	r.type as type from (
+	r.type as type,
+	u.phone as phone from (
 		select *
 		from yearly_occurence
 		union all
@@ -197,8 +198,10 @@ add column type reminder_type not null default 'email';
 alter table occurence
 alter column type drop default;
 
-	
+alter table "user"
+add column phone varchar(32);
 
-	
+alter table occurence
+add column phone varchar(32);
 	
 	
