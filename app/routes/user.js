@@ -43,5 +43,7 @@ router.get('/logout', auth.checkAuthenticated, (req, res) => {
     res.redirect('/user/login', {isAuthenticated: true});
 });
   
-
+router.get("/account", auth.checkAuthenticated, async (req, res) => {
+    res.render('user/account', {isAuthenticated: true})
+})
 module.exports = router
