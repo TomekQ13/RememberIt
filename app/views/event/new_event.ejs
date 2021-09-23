@@ -61,18 +61,21 @@
 
         <!-- sms reminder -->
         <div class="form-group">
-            <input type="checkbox" id="reminderSMS" name="reminderSMS">
+            <input type="checkbox" id="reminderSMS" name="reminderSMS" <% if (existing_event.remind_days_before_sms) { %>
+                checked
+                <% } %>            
+            >
             <label for="reminderSMS">SMS</label>
         </div>        
-        <% if (existing_event.remind_days_before) { %>
-            <% existing_event.remind_days_before.forEach(element => { %>
-                <div class="form-group mb-2">
+        <% if (existing_event.remind_days_before_sms) { %>
+            <% existing_event.remind_days_before_sms.forEach(element => { %>
+                <div class="form-group mb-2 d-none" name="smsReminderFormGroup">
                     <label for="remind_days_before_sms">How many days before would you like to get an SMS reminder?</label>
                     <input type="range" id="remind_days_before_sms" name="remind_days_before_sms" min="1" max="365" required value="<%= element.remind_days_before %>">
                 </div>
             <% }) %>
         <% } else { %>
-            <div class="form-group mb-2">
+            <div class="form-group mb-2 d-none" name="smsReminderFormGroup">
                 <label for="remind_days_before_sms">How many days before would you like to get an SMS reminder?</label>
                 <input type="number" id="remind_days_before_sms" name="remind_days_before_sms" min="1" max="365">
             </div>
