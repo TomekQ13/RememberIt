@@ -107,7 +107,9 @@ async function getEventsNextDays(days, user_id) {
         where 
             user_id = $1 
             and event_date <= current_date + interval '1 days' * $2
-            and event_date >= current_date`, [user_id, days])
+            and event_date >= current_date
+            order by event_date
+        `, [user_id, days])
     return eventsNextDays.rows
 }
 
