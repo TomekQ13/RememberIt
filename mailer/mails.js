@@ -53,6 +53,16 @@ The event ${eventName} is coming on ${eventDate}.
     }
 }
 
+class EmailSender {
+    constructor() {
+        this.transporter = makeTransporter()
+    }
+
+    async send(eventName, eventDate, to) {
+        await sendReminder(this.transporter, eventName, eventDate, to)
+    }
+}
+
 
 module.exports = {makeTransporter, sendEmail, sendReminder}
 
