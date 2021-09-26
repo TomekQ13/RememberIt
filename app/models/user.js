@@ -16,7 +16,7 @@ class User {
             await client.query('insert into "user" (email, password) values ($1, $2)', [this.email, this.password])
             console.log(`User with email ${this.email} saved successfully as a new user`)
         } else {
-            await client.query('update "user" set password = $1, name = $2, update_dttm = now() where email = $3', [this.password, this.name, this.email])
+            await client.query('update "user" set name = $1, update_dttm = now(), phone = $3 where email = $2', [this.name, this.email, this.phone])
             console.log(`User with email ${this.email} updated successfully`)
         }            
     }
@@ -28,7 +28,7 @@ class User {
 }
 
 async function getUserById(id) { 
-    const r = await client.query('select id, insert_dttm, email, password, name from "user" where id = $1', [id])
+    const r = await client.query('select id, insert_dttm, email, password, name, phone from "user" where id = $1', [id])
     return new User(r.rows[0])
 }
 

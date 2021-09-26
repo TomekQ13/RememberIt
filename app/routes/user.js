@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const {User} = require('../models/user')
+const {User, getUserById} = require('../models/user')
 const bcrypt = require('bcrypt')
 
 const auth = require('../auth')
@@ -44,6 +44,15 @@ router.get('/logout', auth.checkAuthenticated, (req, res) => {
 });
   
 router.get("/account", auth.checkAuthenticated, async (req, res) => {
-    res.render('user/account', {isAuthenticated: true})
+    const existingUser = await getUserById(req.user.id)
+    console.log(existingUser)
+    res.render('user/account', {isAuthenticated: true, phone: existingUser.phone, name: existingUser.name})
+})
+
+router.post("/account", auth.checkAuthenticated, async (req, res) => {
+    const existingUser = await getUserById(req.user.id)
+    existingUser.phone = req.body.phoneNumber
+    existingUser.save()
+    res.redirect("/user/account")
 })
 module.exports = router

@@ -28,7 +28,6 @@ async function main() {
         const reminders = await getReminders(client)
         console.log(`Selected  ${reminders.length} reminders`)
         reminders.forEach(async el => {
-            console.log(el)
             const sender = senderFactory(el)
             await sender.send().then(() => {
                 updateReminderSentDttm(client, el.id)
