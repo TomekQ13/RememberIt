@@ -52,6 +52,7 @@ router.get("/account", auth.checkAuthenticated, async (req, res) => {
 router.post("/account", auth.checkAuthenticated, async (req, res) => {
     const existingUser = await getUserById(req.user.id)
     existingUser.phone = req.body.phoneNumber
+    existingUser.name = req.body.name
     existingUser.save()
     res.redirect("/user/account")
 })
