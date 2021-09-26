@@ -2,7 +2,7 @@ var api = require('./api.js');
 
 class SMSSender {
     constructor() {
-        this.smsApi = new api.SMSApi("kuczak.tomasz@gmail.com", "B760DBE6-CAD7-AF24-D0A7-E7EF14C1F6D3");
+        this.smsApi = new api.SMSApi("process.env.CLICKSEND_EMAIL", "process.env.CLICKSEND_API_KEY");
     }
 
     async send(eventName, eventDate, to) {
@@ -10,8 +10,9 @@ class SMSSender {
 
         smsMessage.source = "sdk";
         smsMessage.to = to;
-        smsMessage.body = "test message";
-
+        smsMessage.body = `Hi!
+        The event ${eventName} is coming on ${eventDate}.
+        `
         var smsCollection = new api.SmsMessageCollection();
 
         smsCollection.messages = [smsMessage];
@@ -23,6 +24,8 @@ class SMSSender {
         });
     }
 }
+
+module.exports = SMSSender
 
 
 

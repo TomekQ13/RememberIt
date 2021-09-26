@@ -1,12 +1,24 @@
-const {makeTransporter, sendReminder} = require('./mails.js')
+const {makeTransporter, sendReminder, SMSSender} = require('./mails.js')
+const {EmailSender} = require('./sms.js')
 const {client, getReminders, updateReminderSentDttm} = require('./db.js')
 
 function sleep(ms) {
     return new Promise((resolve) => {
       setTimeout(resolve, ms);
     });
-  }  
+  } 
 
+function senderFactory(senderType) {
+    senderTypes = {
+        'sms': new SMSSender(),
+        'email': new EmailSender()
+    }
+    if (senderType in senderTypes) {
+        return senderType[senderType]
+    } else {
+        console.error('Unknown sender type.')
+    }
+}
 
 
 async function main() {

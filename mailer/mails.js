@@ -64,7 +64,7 @@ class EmailSender {
 }
 
 
-module.exports = {makeTransporter, sendEmail, sendReminder}
+module.exports = {makeTransporter, sendEmail, sendReminder, EmailSender}
 
 
     
