@@ -1,5 +1,4 @@
 const nodemailer = require('nodemailer')
-const {client} = require('./db.js')
 
 function makeTransporter() {
     let transporter = nodemailer.createTransport({
@@ -24,6 +23,7 @@ async function sendEmail(to, subject, text, html, transporter, from = '"Never Fo
             html: html, // html body
             }); 
         console.log("Message sent: %s", r.messageId);
+        return r;
     } catch (e) {
         console.log('There was an error while sending the email')
         console.error(e)
@@ -39,14 +39,14 @@ The event ${eventName} is coming on ${eventDate}.
 <p>The event ${eventName} is coming on ${eventDate}.</p>    
 `
     try {
-        await sendEmail(
+        let r = await sendEmail(
             to,
             subject,
             text,
             html,
             transporter
         )
-        console.log(`Message about event ${eventName} on ${eventDate} sent.`)
+        console.log(`Message about event ${eventName} on ${eventDate} sent. MessageId: ${r.messageId}`)
     } catch (e) {
         console.log('There was an error while sending the email')
         console.error(e)
@@ -54,17 +54,18 @@ The event ${eventName} is coming on ${eventDate}.
 }
 
 class EmailSender {
-    constructor() {
+    constructor(args) {
         this.transporter = makeTransporter()
+        this.args = args
     }
 
-    async send(eventName, eventDate, to) {
-        await sendReminder(this.transporter, eventName, eventDate, to)
+    async send(eventName, eventDate) {
+        await sendReminder(this.transporter, this.args.name, this.args.date, this.args.email)
     }
 }
 
 
-module.exports = {makeTransporter, sendEmail, sendReminder, EmailSender}
+module.exports = EmailSender
 
 
     

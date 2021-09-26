@@ -14,13 +14,30 @@ client.connect()
 const res = client.query('select now()').then(res => console.log('Connected to database ' + res.rows[0].now))
 
 async function getReminders(client) {
-    const reminders =  await client.query('select * from "occurence" where reminder_date = current_date and sent_dttm is null')
+    const reminders =  await client.query(`
+    select 
+        id,
+        public_id,
+        "name",
+        description,
+        date,
+        type,
+        email,
+        phone
+    from "occurence" 
+    where 
+        reminder_date = current_date 
+        and sent_dttm is null`)
     return reminders.rows    
 }
 
-async function updateReminderSentDttm(client, reminderId) {
-    await client.query(`update occurence set sent_dttm = now() where id = ${reminderId}`)
-    console.log(`sent_dttm updated for reminderId = ${reminderId}`)
+function updateReminderSentDttm(client, reminderId) {
+    client.query(`update occurence set sent_dttm = now() where id = ${reminderId}`).then(() => {
+        console.log(`sent_dttm updated for reminderId = ${reminderId}`)
+    }).catch((err) => {
+        console.error(err)
+    })
+    
 }
 
 
