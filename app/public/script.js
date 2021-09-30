@@ -33,7 +33,7 @@ if (btnAddEmailReminder) {
     btnAddEmailReminder.addEventListener('click', () => {
         btnAddEmailReminder.insertAdjacentHTML('beforebegin', 
         `
-        <label for="remind_days_before_email">How many days before would you like to get an email reminder?</label>
+        <label for="remind_days_before_email">How many days before would you like to get an additional email reminder?</label>
         <input type="number" id="remind_days_before_email" name="remind_days_before_email" min="1" max="365" required>
         <button type="button" class="btn btn-outline-danger btn-sm" name="btnRemoveEmailReminder">+</button><br>
         `        
