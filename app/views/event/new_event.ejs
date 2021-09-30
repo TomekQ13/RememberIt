@@ -15,15 +15,15 @@
             method="POST">
         <div class="form-group mb-2">
             <label for="name">Name of the event</label>
-            <input type="text" id="name" name="name" value="<%= existing_event['name'] %>"  required>
+            <input type="text" id="name" class="form-control" name="name" value="<%= existing_event['name'] %>"  required>
         </div>
         <div class="form-group mb-2">
             <label for="description">Description</label>
-            <input type="text" id="description" name="description" value="<%= existing_event['description'] %>">
+            <input type="text" id="description" class="form-control" name="description" value="<%= existing_event['description'] %>">
         </div>        
         <div class="form-group mb-2">
             <label for="first_date">Date of the event</label>
-            <input type="date" id="first_date" name="first_date" <% if (existing_event['first_date']) { %>
+            <input type="date" id="first_date" class="form-control" name="first_date" <% if (existing_event['first_date']) { %>
             value="<%= existing_event['first_date'].toISOString().substring(0,10) %>"
             <% } %> required>
         </div>
