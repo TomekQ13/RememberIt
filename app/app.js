@@ -4,7 +4,7 @@ const expressLayouts = require('express-ejs-layouts');
 const methodOverride= require('method-override');
 app.use(methodOverride('_method'))
 const passport = require('passport');
-const {User, getUserByEmail, getUserById} = require('./models/user')
+const {User, getUserByEmail} = require('./models/user')
 const initializePassport = require('./passport-config');
 initializePassport(
   passport,
