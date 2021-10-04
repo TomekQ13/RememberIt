@@ -203,5 +203,18 @@ add column phone varchar(32);
 
 alter table occurence
 add column phone varchar(32);
+
+-- drop table "token";
+create table "token" (
+	id integer primary key generated always as identity,
+	user_id integer not null,
+	token_value varchar(64) not null,
+	valid_to_dttm timestamp not null,
+	insert_dttm timestamp not null default now(),
+	constraint fk_token_user foreign key(user_id) references "user"(id) on delete cascade
+	
+);
+
+create index index_token_token_value on "token" (token_value);
 	
 	
