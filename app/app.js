@@ -11,6 +11,7 @@ initializePassport(
   email => getUserByEmail(email));
 const flash = require('express-flash');
 const session = require('express-session');
+const cookieParser = require('cookie-parser')
 
 app.set('view engine', 'ejs');
 app.set('views', __dirname + '/views');
@@ -25,8 +26,10 @@ app.use(session({
     saveUninitialized: false
   }));
 app.use(flash());
+app.use(cookieParser())
 app.use(passport.initialize());
 app.use(passport.session());
+app.use(passport.authenticate('remember-me'));
 
 
 

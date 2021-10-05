@@ -33,14 +33,26 @@ router.get("/login", auth.checkNotAuthenticated, async (req, res) => {
 })
 
 router.post("/login", auth.checkNotAuthenticated, passport.authenticate('local', {
-    successRedirect: '/',
+    // successRedirect: '/',
     failureRedirect: '/user/login',
     failureFlash: true
-}));
+}), async (req, res, next) => {
+    // this is a middleware function to issue the token
+    console.log(req.body)
+    if (!req.body.remember_me) {return next()}
+
+    await issueToken(req.user.id, (err, token_value) => {
+        if (err) {return next(err)}
+        res.cookie('remember_me', token_value, {path: "/", httpOnly: true, maxAge: 86400000*30})
+        return next()
+    })
+}, (req, res) => {
+    res.redirect('/')
+});
 
 router.get('/logout', auth.checkAuthenticated, (req, res) => {    
     req.logOut();
-    res.redirect('/user/login', {isAuthenticated: true});
+    res.redirect('/user/login');
 });
   
 router.get("/account", auth.checkAuthenticated, async (req, res) => {
