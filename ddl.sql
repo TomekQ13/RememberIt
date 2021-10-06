@@ -204,7 +204,7 @@ add column phone varchar(32);
 alter table occurence
 add column phone varchar(32);
 
--- drop table "token";
+--drop table "token";
 create table "token" (
 	id integer primary key generated always as identity,
 	user_id integer not null,

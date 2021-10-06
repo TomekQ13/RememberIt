@@ -2,7 +2,7 @@ const localStrategy = require('passport-local').Strategy
 const RemeberMeStrategy = require('passport-remember-me').Strategy
 const bcrypt = require('bcrypt')
 const {User, getUserByEmail, getUserById} = require('./models/user')
-const {Token} = require('./models/token')
+const Token = require('./models/token')
 
 function initialize(passport, getUserByEmail) {
     const authenticateUser = async (email, password, done) => {
@@ -34,7 +34,7 @@ function initialize(passport, getUserByEmail) {
 
     passport.use(new RemeberMeStrategy(
         async function(token_value, done) {
-            const token = Token()
+            const token = new Token()
             await token.consumeRememberMeToken(token_value, async function(err, id) {
                 if (err) {return done(err)}
                 if (!id) {return done(null, false)}
@@ -50,12 +50,13 @@ function initialize(passport, getUserByEmail) {
         }, issueToken
     ))
 
-    async function issueToken(user_id, done) {
-        const token = Token()
-        const token_value = await token.generateToken(64, user_id)
-        await saveRememberMeToken(token_value, user_id)
-        return done(null, token_value)
-    }
+
 };
 
-module.exports = initialize
+async function issueToken(user_id, done) {
+    const token = new Token()
+    const token_value = await token.generateToken(64, user_id)
+    return done(null, token_value)
+}
+
+module.exports = {initialize, issueToken}

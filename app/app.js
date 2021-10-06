@@ -6,7 +6,7 @@ app.use(methodOverride('_method'))
 const passport = require('passport');
 const {User, getUserByEmail} = require('./models/user')
 const initializePassport = require('./passport-config');
-initializePassport(
+initializePassport.initialize(
   passport,
   email => getUserByEmail(email));
 const flash = require('express-flash');

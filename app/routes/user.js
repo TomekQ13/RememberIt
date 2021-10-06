@@ -5,6 +5,7 @@ const bcrypt = require('bcrypt')
 
 const auth = require('../auth')
 const passport = require('passport')
+const initializePassport = require('../passport-config');
 
 router.get("/register", auth.checkNotAuthenticated, async (req, res) => {
      res.render('user/register', {isAuthenticated: false})
@@ -38,10 +39,9 @@ router.post("/login", auth.checkNotAuthenticated, passport.authenticate('local',
     failureFlash: true
 }), async (req, res, next) => {
     // this is a middleware function to issue the token
-    console.log(req.body)
     if (!req.body.remember_me) {return next()}
 
-    await issueToken(req.user.id, (err, token_value) => {
+    await initializePassport.issueToken(req.user.id, (err, token_value) => {
         if (err) {return next(err)}
         res.cookie('remember_me', token_value, {path: "/", httpOnly: true, maxAge: 86400000*30})
         return next()
