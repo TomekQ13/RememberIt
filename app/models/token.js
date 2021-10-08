@@ -9,6 +9,7 @@ class Token {
             insert into "token" (user_id, token_value, valid_to_dttm)
             values ($1, $2, now() + interval '30 day')`,
             [user_id, this.tokenValue])
+            console.log(`New token with value ${this.tokenValue} was generated for user with id ${user_id}`)
         } catch (err) {
             console.error('There has been an error while adding a token to the database.')
             console.error(err)
@@ -25,14 +26,13 @@ class Token {
                 where token_value = $1
                     and valid_to_dttm >= now()`,
                 [token_value]) 
-            this.user_id = r.rows[0].id   
+            this.user_id = r.rows[0].user_id 
         } catch (err) {
             console.error('There has been an error while selecting the user_id.')
             console.error(err)
         }
              
        // invalidate the single-use token
-       // here is the problem because we create and then immediately invalidate the token
         try {
             await client.query(`
                 update "token"
