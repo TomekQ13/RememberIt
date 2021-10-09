@@ -13,6 +13,7 @@ const flash = require('express-flash');
 const session = require('express-session');
 const cookieParser = require('cookie-parser')
 
+
 app.set('view engine', 'ejs');
 app.set('views', __dirname + '/views');
 app.set('layout', 'layouts/layout');
@@ -33,6 +34,8 @@ app.use(passport.authenticate('remember-me'));
 
 
 
+
+
 const indexRouter = require('./routes/index')
 app.use('/', indexRouter)
 const userRouter = require('./routes/user')
@@ -43,8 +46,10 @@ const newEventRouter = require('./routes/new_event')
 app.use('/new_event', newEventRouter)
 const editEventRouter = require('./routes/edit_event')
 app.use('/edit_event', editEventRouter)
+const subscriptionRouter = require('./routes/subscription')
+app.use('/subscription', subscriptionRouter)
 
 app.listen(process.env.PORT || 80, () => {
-    console.log("Application started and Listening on port 3000");
+    console.log("Application started and Listening on port 80");
   });
 
