@@ -51,6 +51,7 @@ router.post("/login", auth.checkNotAuthenticated, passport.authenticate('local',
 });
 
 router.get('/logout', auth.checkAuthenticated, (req, res) => {    
+    res.clearCookie('remember_me');
     req.logOut();
     res.redirect('/user/login');
 });
