@@ -61,7 +61,7 @@ router.post(
 '/webhook',
 express.raw({type: 'application/json'}),
 async (req, res) => {
-    const event = req.body
+    let event;
     // Replace this endpoint secret with your endpoint's unique secret
     // If you are testing with the CLI, find the secret by running 'stripe listen'
     // If you are using an endpoint defined with the API or dashboard, look in your webhook settings
