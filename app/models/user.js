@@ -37,4 +37,8 @@ async function getUserByEmail(email) {
     return new User(r.rows[0])
 }
 
-module.exports = {User, getUserById, getUserByEmail}
+async function updatePremiumStatus(user_id) {
+    await client.query(`update "user" set premium_valid_to = now() + interval '30 day' where user_id = $1`, [user_id])
+}
+
+module.exports = {User, getUserById, getUserByEmail, updatePremiumStatus}

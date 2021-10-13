@@ -2,8 +2,9 @@ const express = require('express')
 const router = express.Router()
 const auth = require('../auth')
 const stripe = require('stripe')('sk_test_51JgEU0Dw9XEVgKC7aCPNktt1cYNN2jB8dLR5h5f4Pr5S24jZhv8a3orxUZPHIkZXvfMBoDgik6V4AHr85ZO9K6RW00LPvHQH7e')
+const {updatePremiumStatus} = require('../models/user')
 
-const YOUR_DOMAIN = 'http://localhost:80';
+const YOUR_DOMAIN = process.env.STRIPE_DOMAIN;
 
 router.get('/', auth.checkAuthenticated, (req, res) => {
     res.render('subscription/pricing_preview', {isAuthenticated: true})
@@ -44,6 +45,7 @@ router.post('/create-checkout-session', async (req, res) => {
     // For demonstration purposes, we're using the Checkout session to retrieve the customer ID.
     // Typically this is stored alongside the authenticated user in your database.
     const { session_id } = req.body;
+    console.log(req.body)
     const checkoutSession = await stripe.checkout.sessions.retrieve(session_id);
     // This is the url to which the customer will be redirected when they are done
     // managing their billing with the portal.
@@ -58,13 +60,13 @@ router.post('/create-checkout-session', async (req, res) => {
 router.post(
 '/webhook',
 express.raw({ type: 'application/json' }),
-(req, res) => {
+async (req, res) => {
     const event = req.body;
     // Replace this endpoint secret with your endpoint's unique secret
     // If you are testing with the CLI, find the secret by running 'stripe listen'
     // If you are using an endpoint defined with the API or dashboard, look in your webhook settings
     // at https://dashboard.stripe.com/webhooks
-    const endpointSecret = 'whsec_12345';
+    const endpointSecret = process.env.STRIPE_WEBHOOK_SUB_SECRET;
     // Only verify the event if you have an endpoint secret defined.
     // Otherwise use the basic event deserialized with JSON.parse
     if (endpointSecret) {
@@ -103,8 +105,7 @@ express.raw({ type: 'application/json' }),
         subscription = event.data.object;
         status = subscription.status;
         console.log(`Subscription status is ${status}.`);
-        // Then define and call a method to handle the subscription created.
-        // handleSubscriptionCreated(subscription);
+        await updatePremiumStatus(req.user.id)
         break;
     case 'customer.subscription.updated':
         subscription = event.data.object;

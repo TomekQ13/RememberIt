@@ -218,6 +218,4 @@ create table "token" (
 create index index_token_token_value on "token" (token_value);
 
 alter table "user"
-add column premium integer not null default 0;
-	
-	
+add column premium_valid_to timestamp;
