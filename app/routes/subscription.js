@@ -59,7 +59,7 @@ router.post('/create-checkout-session', async (req, res) => {
 
 router.post(
 '/webhook',
-express.raw({ type: 'application/json' }),
+express.raw(),
 async (req, res) => {
     // Replace this endpoint secret with your endpoint's unique secret
     // If you are testing with the CLI, find the secret by running 'stripe listen'
