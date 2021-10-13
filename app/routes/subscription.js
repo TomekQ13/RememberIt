@@ -1,4 +1,5 @@
 const express = require('express')
+const { ReadyForQueryMessage } = require('pg-protocol/dist/messages')
 const router = express.Router()
 const auth = require('../auth')
 const stripe = require('stripe')('sk_test_51JgEU0Dw9XEVgKC7aCPNktt1cYNN2jB8dLR5h5f4Pr5S24jZhv8a3orxUZPHIkZXvfMBoDgik6V4AHr85ZO9K6RW00LPvHQH7e')
@@ -60,6 +61,7 @@ router.post(
 '/webhook',
 express.raw({type: 'application/json'}),
 async (req, res) => {
+    const event = req.body
     // Replace this endpoint secret with your endpoint's unique secret
     // If you are testing with the CLI, find the secret by running 'stripe listen'
     // If you are using an endpoint defined with the API or dashboard, look in your webhook settings
@@ -70,10 +72,10 @@ async (req, res) => {
     if (endpointSecret) {
     // Get the signature sent by Stripe
     const signature = req.headers['stripe-signature'];
-    console.log(req.rawBody)
-    console.log(req.body)
+    console.log(signature)
+    console.log(endpointSecret)
     try {
-        var event = stripe.webhooks.constructEvent(
+        event = stripe.webhooks.constructEvent(
         req.body,
         signature,
         endpointSecret
