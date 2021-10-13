@@ -19,6 +19,7 @@ app.set('views', __dirname + '/views');
 app.set('layout', 'layouts/layout');
 app.use(expressLayouts);
 app.use(express.static('public'));
+/* the below two lines are required for the Stripe webhook to work */
 const bodyParser = require('body-parser')
 app.use('/subscription/webhook', bodyParser.raw({type: "*/*"}))
 app.use(express.json());
