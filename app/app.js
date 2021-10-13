@@ -19,6 +19,8 @@ app.set('views', __dirname + '/views');
 app.set('layout', 'layouts/layout');
 app.use(expressLayouts);
 app.use(express.static('public'));
+const bodyParser = require('body-parser')
+app.use('/subscription/webhook', bodyParser.raw({type: "*/*"}))
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(session({
