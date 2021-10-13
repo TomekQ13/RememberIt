@@ -72,8 +72,6 @@ async (req, res) => {
     if (endpointSecret) {
     // Get the signature sent by Stripe
     const signature = req.headers['stripe-signature'];
-    console.log(signature)
-    console.log(endpointSecret)
     try {
         event = stripe.webhooks.constructEvent(
         req.body,
@@ -88,7 +86,6 @@ async (req, res) => {
     let subscription;
     let status;
     // Handle the event
-    console.log(`Event received: ${event}`)
     switch (event.type) {
     case 'customer.subscription.trial_will_end':
         subscription = event.data.object;
