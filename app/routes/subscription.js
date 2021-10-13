@@ -61,7 +61,6 @@ router.post(
 '/webhook',
 express.raw({ type: 'application/json' }),
 async (req, res) => {
-    const event = req.body;
     // Replace this endpoint secret with your endpoint's unique secret
     // If you are testing with the CLI, find the secret by running 'stripe listen'
     // If you are using an endpoint defined with the API or dashboard, look in your webhook settings
@@ -73,7 +72,7 @@ async (req, res) => {
     // Get the signature sent by Stripe
     const signature = req.headers['stripe-signature'];
     try {
-        event = stripe.webhooks.constructEvent(
+        var event = stripe.webhooks.constructEvent(
         req.body,
         signature,
         endpointSecret
