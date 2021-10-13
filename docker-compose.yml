@@ -33,6 +33,8 @@ services:
              - POSTGRES_PORT
              - POSTGRES_DATABASE
              - POSTGRES_HOST
+             - STRIPE_DOMAIN
+             - STRIPE_WEBHOOK_SUB_SECRET
     mailer:
         build:
             context: ./mailer/
