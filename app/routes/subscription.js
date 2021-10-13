@@ -70,10 +70,11 @@ async (req, res) => {
     if (endpointSecret) {
     // Get the signature sent by Stripe
     const signature = req.headers['stripe-signature'];
-    console.log(req)
+    console.log(req.rawBody)
+    console.log(req.body)
     try {
         var event = stripe.webhooks.constructEvent(
-        req.rawBody,
+        req.body,
         signature,
         endpointSecret
         );
