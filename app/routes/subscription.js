@@ -3,7 +3,7 @@ const { ReadyForQueryMessage } = require('pg-protocol/dist/messages')
 const router = express.Router()
 const auth = require('../auth')
 const stripe = require('stripe')('sk_test_51JgEU0Dw9XEVgKC7aCPNktt1cYNN2jB8dLR5h5f4Pr5S24jZhv8a3orxUZPHIkZXvfMBoDgik6V4AHr85ZO9K6RW00LPvHQH7e')
-const {updatePremiumStatus} = require('../models/user')
+const {saveStripeCustomerId} = require('../models/user')
 
 const YOUR_DOMAIN = process.env.STRIPE_DOMAIN;
 
@@ -28,25 +28,30 @@ router.post('/create-checkout-session', async (req, res) => {
     const session = await stripe.checkout.sessions.create({
       billing_address_collection: 'auto',
       payment_method_types: ['card'],
+      client_reference_id: req.user.id,
       line_items: [
         {
           price: prices.data[0].id,
           // For metered billing, do not pass quantity
-          quantity: 1,
+          quantity: 1
         },
       ],
       mode: 'subscription',
       success_url: `${YOUR_DOMAIN}/subscription/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${YOUR_DOMAIN}/subscription/cancel`,
     });
+    console.log(session)
     res.redirect(303, session.url)
   });
 
   router.post('/create-portal-session', async (req, res) => {
     // For demonstration purposes, we're using the Checkout session to retrieve the customer ID.
     // Typically this is stored alongside the authenticated user in your database.
-    const { session_id } = req.body;
+    console.log(req.body.session_id)
+    const session_id = req.query.session_id;
+    console.log(session_id)
     const checkoutSession = await stripe.checkout.sessions.retrieve(session_id);
+    console.log(checkoutSession)
     // This is the url to which the customer will be redirected when they are done
     // managing their billing with the portal.
     const returnUrl = YOUR_DOMAIN;
@@ -83,36 +88,17 @@ async (req, res) => {
         return res.sendStatus(400);
     }
     }
-    let subscription;
-    let status;
     // Handle the event
+    console.log(`Processing event  ${event.type}.`);
     switch (event.type) {
-    case 'customer.subscription.trial_will_end':
-        subscription = event.data.object;
-        status = subscription.status;
-        console.log(`Subscription status is ${status}.`);
-        // Then define and call a method to handle the subscription trial ending.
-        // handleSubscriptionTrialEnding(subscription);
+    case 'checkout.session.completed':
+        await saveStripeCustomerId(event.data.client_reference_id, event.data.customer)
         break;
-    case 'customer.subscription.deleted':
-        subscription = event.data.object;
-        status = subscription.status;
-        console.log(`Subscription status is ${status}.`);
-        // Then define and call a method to handle the subscription deleted.
-        // handleSubscriptionDeleted(subscriptionDeleted);
+    case 'invoice.paid':
+        await updatePremiumStatus(event.data.customer)
         break;
-    case 'customer.subscription.created':
-        subscription = event.data.object;
-        status = subscription.status;
-        console.log(`Subscription status is ${status}.`);
-        await updatePremiumStatus(req.user.id)
-        break;
-    case 'customer.subscription.updated':
-        subscription = event.data.object;
-        status = subscription.status;
-        console.log(`Subscription status is ${status}.`);
-        // Then define and call a method to handle the subscription update.
-        // handleSubscriptionUpdated(subscription);
+    case 'invoice.payment_failed':
+        
         break;
     default:
         // Unexpected event type

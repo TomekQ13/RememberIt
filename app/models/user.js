@@ -37,8 +37,12 @@ async function getUserByEmail(email) {
     return new User(r.rows[0])
 }
 
-async function updatePremiumStatus(user_id) {
-    await client.query(`update "user" set premium_valid_to = now() + interval '30 day' where user_id = $1`, [user_id])
+async function updatePremiumStatus(stripe_customer_id) {
+    await client.query(`update "user" set premium_valid_to = now() + interval '1 month' where stripe_customer_id = $1 and stripe_customer_id is not null`, [stripe_customer_id])
 }
 
-module.exports = {User, getUserById, getUserByEmail, updatePremiumStatus}
+async function saveStripeCustomerId(user_id, stripe_customer_id) {
+    await client.query(`update "user" set stripe_customer_id = $1 where id = $2`, [stripe_customer_id, user_id])
+}
+
+module.exports = {User, getUserById, getUserByEmail, updatePremiumStatus, saveStripeCustomerId}

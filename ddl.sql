@@ -219,3 +219,8 @@ create index index_token_token_value on "token" (token_value);
 
 alter table "user"
 add column premium_valid_to timestamp;
+
+alter table "user"
+add column stripe_customer_id varchar(64);
+
+create index index_user_id on "user" ("id");
