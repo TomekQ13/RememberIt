@@ -3,7 +3,7 @@ const { ReadyForQueryMessage } = require('pg-protocol/dist/messages')
 const router = express.Router()
 const auth = require('../auth')
 const stripe = require('stripe')('sk_test_51JgEU0Dw9XEVgKC7aCPNktt1cYNN2jB8dLR5h5f4Pr5S24jZhv8a3orxUZPHIkZXvfMBoDgik6V4AHr85ZO9K6RW00LPvHQH7e')
-const {saveStripeCustomerId} = require('../models/user')
+const {saveStripeCustomerId, updatePremiumStatus} = require('../models/user')
 
 const YOUR_DOMAIN = process.env.STRIPE_DOMAIN;
 
@@ -98,7 +98,7 @@ async (req, res) => {
         await updatePremiumStatus(event.data.customer)
         break;
     case 'invoice.payment_failed':
-        
+
         break;
     default:
         // Unexpected event type
