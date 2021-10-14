@@ -38,11 +38,25 @@ async function getUserByEmail(email) {
 }
 
 async function updatePremiumStatus(stripe_customer_id) {
-    await client.query(`update "user" set premium_valid_to = now() + interval '1 month' where stripe_customer_id = $1 and stripe_customer_id is not null`, [stripe_customer_id])
+    try {
+        await client.query(`update "user" set premium_valid_to = now() + interval '1 month' where stripe_customer_id = $1 and stripe_customer_id is not null`, [stripe_customer_id])
+        console.log(`Premium status updated for user with stripe_customer_id = ${stripe_customer_id}`)
+    } catch (err) {
+        console.error(`There was an error with updating premium status for user with stripe_customer_id = ${stripe_customer_id}`)
+        console.error(err)
+    }
+    
 }
 
 async function saveStripeCustomerId(user_id, stripe_customer_id) {
-    await client.query(`update "user" set stripe_customer_id = $1 where id = $2`, [stripe_customer_id, user_id])
+    try {
+        await client.query(`update "user" set stripe_customer_id = $1 where id = $2`, [stripe_customer_id, user_id])
+        console.log(`Stripe_customer_id ${stripe_customer_id} was assigned to user with id ${user_id}`)
+    } catch (err) {
+        console.error(`There was an error with assigning stripe_customer_id ${stripe_customer_id} to user with id ${user_id}`)
+        console.error(err)
+    }
+    
 }
 
 module.exports = {User, getUserById, getUserByEmail, updatePremiumStatus, saveStripeCustomerId}
