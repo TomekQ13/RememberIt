@@ -47,6 +47,8 @@ router.post('/create-checkout-session', async (req, res) => {
   router.post('/create-portal-session', async (req, res) => {
     // For demonstration purposes, we're using the Checkout session to retrieve the customer ID.
     // Typically this is stored alongside the authenticated user in your database.
+    
+    // this needs to be changed to get the user id from the 
     const session_id = req.query.session_id;
     const checkoutSession = await stripe.checkout.sessions.retrieve(session_id);
     // This is the url to which the customer will be redirected when they are done
@@ -92,6 +94,7 @@ async (req, res) => {
         await saveStripeCustomerId(event.data.object.client_reference_id, event.data.object.customer)
         break;
     case 'invoice.paid':
+        // checks what happens if there is not row updated - prepare a solution for this? Is this even possible with stripe?
         await updatePremiumStatus(event.data.object.customer)
         break;
     case 'invoice.payment_failed':
