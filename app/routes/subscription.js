@@ -89,15 +89,13 @@ async (req, res) => {
     }
     }
     // Handle the event
-    console.log(`Processing event  ${event.type}.`);
+    console.log(`Processing event ${event.type}.`);
     switch (event.type) {
     case 'checkout.session.completed':
-        console.log(event.data.client_reference_id)
-        console.log(event.data.customer)
-        await saveStripeCustomerId(event.data.client_reference_id, event.data.customer)
+        await saveStripeCustomerId(event.data.object.client_reference_id, event.data.object.customer)
         break;
     case 'invoice.paid':
-        await updatePremiumStatus(event.data.customer)
+        await updatePremiumStatus(event.data.object.customer)
         break;
     case 'invoice.payment_failed':
 
