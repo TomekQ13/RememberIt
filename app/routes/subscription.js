@@ -47,11 +47,8 @@ router.post('/create-checkout-session', async (req, res) => {
   router.post('/create-portal-session', async (req, res) => {
     // For demonstration purposes, we're using the Checkout session to retrieve the customer ID.
     // Typically this is stored alongside the authenticated user in your database.
-    console.log(req.body.session_id)
     const session_id = req.query.session_id;
-    console.log(session_id)
     const checkoutSession = await stripe.checkout.sessions.retrieve(session_id);
-    console.log(checkoutSession)
     // This is the url to which the customer will be redirected when they are done
     // managing their billing with the portal.
     const returnUrl = YOUR_DOMAIN;
