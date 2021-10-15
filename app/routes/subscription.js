@@ -3,7 +3,7 @@ const { ReadyForQueryMessage } = require('pg-protocol/dist/messages')
 const router = express.Router()
 const auth = require('../auth')
 const stripe = require('stripe')('sk_test_51JgEU0Dw9XEVgKC7aCPNktt1cYNN2jB8dLR5h5f4Pr5S24jZhv8a3orxUZPHIkZXvfMBoDgik6V4AHr85ZO9K6RW00LPvHQH7e')
-const {saveStripeCustomerId, updatePremiumStatus} = require('../models/user')
+const {saveStripeCustomerId, updatePremiumStatus, getUserById} = require('../models/user')
 
 const YOUR_DOMAIN = process.env.STRIPE_DOMAIN;
 
@@ -20,7 +20,7 @@ router.get('/cancel', auth.checkAuthenticated, (req, res) => {
 })
 
 
-router.post('/create-checkout-session', async (req, res) => {
+router.post('/create-checkout-session', auth.checkAuthenticated, async (req, res) => {
     const prices = await stripe.prices.list({
       lookup_keys: [req.body.lookup_key],
       expand: ['data.product'],
@@ -44,18 +44,17 @@ router.post('/create-checkout-session', async (req, res) => {
     res.redirect(303, session.url)
   });
 
-  router.post('/create-portal-session', async (req, res) => {
-    // For demonstration purposes, we're using the Checkout session to retrieve the customer ID.
-    // Typically this is stored alongside the authenticated user in your database.
-    
-    // this needs to be changed to get the user id from the 
-    const session_id = req.query.session_id;
-    const checkoutSession = await stripe.checkout.sessions.retrieve(session_id);
+  router.post('/create-portal-session', auth.checkAuthenticated, async (req, res) => {
+    const user = await getUserById(req.user.id)
+    if (!user.stripe_customer_id) {
+        return res.redirect('/subscription')
+    }
+
     // This is the url to which the customer will be redirected when they are done
     // managing their billing with the portal.
     const returnUrl = YOUR_DOMAIN;
     const portalSession = await stripe.billingPortal.sessions.create({
-      customer: checkoutSession.customer,
+      customer: user.stripe_customer_id,
       return_url: returnUrl,
     });
     res.redirect(303, portalSession.url);

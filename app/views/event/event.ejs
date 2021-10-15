@@ -1,13 +1,22 @@
 <div class="container">
-    <h1>Event</h1>
-    <div>
-        <h2><%= event.name %></h2>
-        <p>Date <%= event.first_date %></p>
-        <p>Repeat <%= event.repeat %></p>
-        <p><%= event.description %></p>                
+    <div class="card box-shadow mt-3">
+        <div class="card-header">
+            <h2><%= event.name %></h2>
+        </div>
+        <div class="card-body">
+            <p>Date <%= event.first_date.toLocaleString('en-EN', {
+                weekday: 'long',
+                day: 'numeric', 
+                year: 'numeric', 
+                month: 'long'}) %></p>
+            <p>Repeat <%= event.repeat %></p>
+            <p><%= event.description %></p>
+            <div class="d-flex">
+                <a href="/edit_event/<%= event.public_id %>" class="btn btn-primary" role="button">Edit</a>
+                <form action="/events/<%= event.public_id %>?_method=DELETE" method="POST">
+                    <button type="submit" class="btn btn-outline-danger">Delete</button>
+                </form>
+            </div>
+        </div>
     </div>
-    <a href="/edit_event/<%= event.public_id %> ">Edit</a>
-    <form action="/events/<%= event.public_id %>?_method=DELETE" method="POST">
-        <button type="submit" >Delete</button>
-    </form>
 </div>

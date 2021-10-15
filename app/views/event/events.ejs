@@ -13,7 +13,7 @@
                     month: 'long'}) %></div>
                 <p class="card-text mb-auto">The event is repeated: <%= event.repeat %></p>
                 <p class="card-text mb-auto"><%= event.description %></p>
-                <a href="/events/<%= event.public_id %>">Go to event</a>
+                <a href="/events/<%= event.public_id %>" class="btn btn-primary mt-2">Go to event</a>
             </div>
         </div>
     <% }) %>

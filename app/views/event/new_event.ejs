@@ -46,13 +46,20 @@
             <label for="reminderEmail">Email</label>
         </div>        
         <% if (existing_event.remind_days_before) { %>
-            <% existing_event.remind_days_before.forEach(element => { %>
+            <% existing_event.remind_days_before.forEach((element, i) => { %>
                 <div class="form-group mb-2" name="emailReminderFormGroup">
-                    <label for="remind_days_before_email">How many days before would you like to get an email reminder?</label>
+                    <% if (i === 0) { %>
+                        <label for="remind_days_before_email">How many days before would you like to get an email reminder?</label>
+                    <% } else { %>
+                    <label for="remind_days_before_email">How many days before would you like to get an additional email reminder?</label>
+                    <% } %> 
                     <input type="range" id="remind_days_before_email" name="remind_days_before_email" min="1" max="365" required value="<%= element.remind_days_before %>"><br>
-                    <button type="button" class="btn btn-secondary btn-sm" id="btnAddEmailReminder">+</button>
+                    <% if (i === existing_event.remind_days_before.length - 1) { %>
+                        <button type="button" class="btn btn-secondary btn-sm" id="btnAddEmailReminder">+</button>
+                    <% } %>
                 </div>
             <% }) %>
+            
         <% } else { %>
             <div class="form-group mb-2" name="emailReminderFormGroup">
                 <label for="remind_days_before_email">How many days before would you like to get an email reminder?</label>
