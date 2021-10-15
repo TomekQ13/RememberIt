@@ -11,10 +11,10 @@
                 month: 'long'}) %></p>
             <p>Repeat <%= event.repeat %></p>
             <p><%= event.description %></p>
-            <div class="d-flex">
-                <a href="/edit_event/<%= event.public_id %>" class="btn btn-primary" role="button">Edit</a>
-                <form action="/events/<%= event.public_id %>?_method=DELETE" method="POST">
-                    <button type="submit" class="btn btn-outline-danger">Delete</button>
+            <div>
+                <a href="/edit_event/<%= event.public_id %>" class="btn btn-primary d-inline" role="button">Edit</a>
+                <form action="/events/<%= event.public_id %>?_method=DELETE" method="POST" class="d-inline">
+                    <button type="submit" class="btn btn-outline-danger d-inline">Delete</button>
                 </form>
             </div>
         </div>
