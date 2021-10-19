@@ -1,4 +1,4 @@
-exports.randomString = function(len) {
+randomString = function(len) {
     var buf = []
       , chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
       , charlen = chars.length;
@@ -13,3 +13,12 @@ exports.randomString = function(len) {
   function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
   }
+
+function isDatetimeAfterNow(datetime) {
+    const nowDatetime = new Date()
+    return nowDatetime > datetime
+}
+
+
+
+module.exports = {randomString, isDatetimeAfterNow}

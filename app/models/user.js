@@ -7,6 +7,10 @@ class User {
         }
         params.email = params.email.toLowerCase()
         for(var k in params) this[k]=params[k];
+
+        if (params['premium_valid_to']) {
+            this.isPremium = isDatetimeAfterNow(params.premium_valid_to)
+        }
     }
 
     async save() {

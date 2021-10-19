@@ -2,6 +2,7 @@ const express = require('express')
 const router = express.Router()
 const {User, getUserById} = require('../models/user')
 const bcrypt = require('bcrypt')
+const {isDatetimeAfterNow} = require('../utils')
 
 const auth = require('../auth')
 const passport = require('passport')
@@ -58,7 +59,13 @@ router.get('/logout', auth.checkAuthenticated, (req, res) => {
   
 router.get("/account", auth.checkAuthenticated, async (req, res) => {
     const existingUser = await getUserById(req.user.id)
-    res.render('user/account', {isAuthenticated: true, phone: existingUser.phone, name: existingUser.name})
+    res.render('user/account', {
+        isAuthenticated: true,
+        phone: existingUser.phone,
+        name: existingUser.name,
+        isPremium: existingUser.isPremium,
+        premiumValidTo: existingUser['premium_valid_to']
+    })
 })
 
 router.post("/account", auth.checkAuthenticated, async (req, res) => {
