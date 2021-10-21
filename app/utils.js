@@ -16,7 +16,7 @@ randomString = function(len) {
 
 function isDatetimeAfterNow(datetime) {
     const nowDatetime = new Date()
-    return nowDatetime > datetime
+    return nowDatetime <= datetime
 }
 
 

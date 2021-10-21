@@ -11,14 +11,18 @@
                 <input type="tel" id="phoneNumber" name="phoneNumber" class="form-control" placeholder="Enter a phone number" value="<%=phone%>">
                 <small>Phone number will be used only to send SMS reminders.</small>
             </div>
-            <button type="submit" class="btn btn-primary">Update</button>
+            <button type="submit" class="btn btn-primary mt-1">Update</button>
         </form>
     </div>
     <div class="mt-4">
-        <h3>Premium status</h3>
+        <h3 class="mb-1">Premium status</h3>
         <% if (isPremium) { %>
-            <p>Premium account active until <%= premiumValidTo %></p>
-            <form action="/subscription/create-portal-session" method="POST">
+            <p class="mb-1">Premium account active until <%= premiumValidTo.toLocaleString('en-EN', {
+                weekday: 'long',
+                day: 'numeric', 
+                year: 'numeric', 
+                month: 'long'}) %></p>
+            <form action="/subscription/create-portal-session" method="POST" class="mt-0">
                 <input type="hidden" id="session-id" name="session_id" value="" />
                 <button id="checkout-and-portal-button" type="submit" class="btn btn-primary">Manage your subscription</button>
               </form>         
