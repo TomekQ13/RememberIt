@@ -1,7 +1,7 @@
 <div class="container">
     <div class="card box-shadow mt-3">
         <div class="card-header">
-            <h2><%= event.name %></h2>
+            <h2 class="mt-0"><%= event.name %></h2>
         </div>
         <div class="card-body">
             <p>Date <%= event.first_date.toLocaleString('en-EN', {
@@ -10,7 +10,9 @@
                 year: 'numeric', 
                 month: 'long'}) %></p>
             <p>Repeat <%= event.repeat %></p>
-            <p><%= event.description %></p>
+            <% if (event['description']) { %>
+                <p><%= event.description %></p>
+            <% } %>            
             <div>
                 <a href="/edit_event/<%= event.public_id %>" class="btn btn-primary d-inline" role="button">Edit</a>
                 <form action="/events/<%= event.public_id %>?_method=DELETE" method="POST" class="d-inline">

@@ -58,7 +58,6 @@ router.get('/logout', auth.checkAuthenticated, (req, res) => {
   
 router.get("/account", auth.checkAuthenticated, async (req, res) => {
     const existingUser = await getUserById(req.user.id)
-    console.log(existingUser)
     res.render('user/account', {
         isAuthenticated: true,
         phone: existingUser.phone,
