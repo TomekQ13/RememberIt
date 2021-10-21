@@ -4,12 +4,12 @@
             <h2 class="mb-0"><%= event.name %></h2>
         </div>
         <div class="card-body">
-            <p>Date <%= event.first_date.toLocaleString('en-EN', {
+            <p><b>Date</b> <%= event.first_date.toLocaleString('en-EN', {
                 weekday: 'long',
                 day: 'numeric', 
                 year: 'numeric', 
                 month: 'long'}) %></p>
-            <p>Repeat <%= event.repeat %></p>
+            <p><b>Repeat</b> <%= event.repeat %></p>
             <% if (event['description']) { %>
                 <p><%= event.description %></p>
             <% } %>            
