@@ -46,7 +46,6 @@ router.post('/create-checkout-session', auth.checkAuthenticated, async (req, res
 
   router.post('/create-portal-session', auth.checkAuthenticated, async (req, res) => {
     const user = await getUserById(req.user.id)
-    console.log(user)
     if (!user.stripe_customer_id) {
         return res.redirect('/subscription')
     }
@@ -58,8 +57,6 @@ router.post('/create-checkout-session', auth.checkAuthenticated, async (req, res
       customer: user.stripe_customer_id,
       return_url: returnUrl,
     });
-    console.log(YOUR_DOMAIN)
-    console.log(portalSession)
     res.redirect(303, portalSession.url);
   });
 
