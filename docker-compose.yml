@@ -35,6 +35,7 @@ services:
              - POSTGRES_HOST
              - STRIPE_DOMAIN
              - STRIPE_WEBHOOK_SUB_SECRET
+             - EMAIL_PASS
     mailer:
         build:
             context: ./mailer/

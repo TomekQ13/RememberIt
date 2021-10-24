@@ -225,3 +225,9 @@ add column stripe_customer_id varchar(64);
 
 create index index_user_id on "user" ("id");
 drop index index_user_id;
+
+alter table "user"
+add column reset_password_token varchar(64);
+
+alter table "user"
+add column reset_password_token_dttm timestamp;

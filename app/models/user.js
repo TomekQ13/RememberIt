@@ -1,5 +1,6 @@
 const client = require('../db.js')
-const {isDatetimeAfterNow} = require('../utils')
+const {randomString, isDatetimeAfterNow} = require('../utils')
+const Emailer = require('../mails')
 
 class User {
     constructor(params) {
@@ -30,15 +31,86 @@ class User {
         await client.query('delete from "user" where email = $1', [this.email])
         console.log(`User with email ${this.email} deleted successfully`)
     }
+
+    async saveResetPasswordToken(token) {
+        try {
+            await client.query(`
+                update "user"
+                set reset_password_token = $1, reset_password_token_dttm = now() + interval '1 hour' 
+                where id = $2`, [token, this.id]
+            )
+            console.log(`Reset password token succesfully generated for user with id ${this.id}`)
+        } catch (err) {
+            console.error(`There has been an error while saving the reset password token for user with id ${this.id}`)
+            console.error(err)
+        }   
+    }
+
+    async changePassword(newPassword) {
+        try {
+            await client.query(`
+                update "user"
+                set password = $1
+                where id = $2
+            `, [newPassword, this.id])
+        console.log(`Password changed successfully for user with id ${this.id}`)
+        } catch (err) {
+            console.error(`There has been an error while changing the password for user with id ${this.id}`)
+            console.error(err)
+        }
+    }
+
+    async sendResetPasswordEmail() {        
+        const resetPasswordToken = randomString(64)
+        const resetPasswordLink = new URL(process.env.STRIPE_DOMAIN + '/user/reset_password')
+        let params = new URLSearchParams(resetPasswordLink.search)
+        params.set('email', this.email)
+        params.set('token', resetPasswordToken)
+
+        const body_text = `
+        Hi ${this.name},
+        
+        If you need to reset your password click here: ${resetPasswordLink}
+        The link is valid for 60 minutes from the time it has been sent. If the link is no longer valid you can generate a new one.
+
+        If you did not make this request then ignore this email and no changes will be made.
+
+        Best regards
+        Never forget it team
+        `
+        const body_html = `
+        <h2>Hi ${this.name},</h2>
+        <p>
+        If you need to reset your password click here: <a href="${resetPasswordLink}">${resetPasswordLink}</a><br>
+        The link is valid for 60 minutes from the time it has been sent. If the link is no longer valid you can generate a new one.
+        </p>
+        <p>
+        If you did not make this request then ignore this email and no changes will be made.
+        </p>
+        <p>
+        Best regards<br>
+        Never forget it team
+        </p>
+        `        
+        await this.saveResetPasswordToken(resetPasswordToken)
+
+        const emailer = new Emailer()
+        await emailer.sendEmail(
+            this.email,
+            'Password reset',
+            body_text,
+            body_html
+        )
+    }
 }
 
 async function getUserById(id) { 
-    const r = await client.query('select id, insert_dttm, email, password, name, phone, premium_valid_to, stripe_customer_id from "user" where id = $1', [id])
+    const r = await client.query('select id, insert_dttm, email, password, name, phone, premium_valid_to, stripe_customer_id, reset_password_token, reset_password_token_dttm from "user" where id = $1', [id])
     return new User(r.rows[0])
 }
 
 async function getUserByEmail(email) {
-    const r = await client.query('select id, insert_dttm, email, password, name, premium_valid_to, stripe_customer_id from "user" where email = $1', [email.toLowerCase()])
+    const r = await client.query('select id, insert_dttm, email, password, name, premium_valid_to, stripe_customer_id, reset_password_token, reset_password_token_dttm from "user" where email = $1', [email.toLowerCase()])
     return new User(r.rows[0])
 }
 

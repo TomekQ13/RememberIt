@@ -1,4 +1,4 @@
-randomString = function(len) {
+function randomString(len) {
     var buf = []
       , chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
       , charlen = chars.length;
@@ -8,11 +8,11 @@ randomString = function(len) {
     }
   
     return buf.join('');
-  };
+}
   
-  function getRandomInt(min, max) {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-  }
+function getRandomInt(min, max) {
+return Math.floor(Math.random() * (max - min + 1)) + min;
+}
 
 function isDatetimeAfterNow(datetime) {
     const nowDatetime = new Date()

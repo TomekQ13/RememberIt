@@ -1,11 +1,12 @@
 const express = require('express')
 const router = express.Router()
-const {User, getUserById} = require('../models/user')
+const {User, getUserById, getUserByEmail} = require('../models/user')
 const bcrypt = require('bcrypt')
 
 const auth = require('../auth')
 const passport = require('passport')
 const initializePassport = require('../passport-config');
+
 
 router.get("/register", auth.checkNotAuthenticated, async (req, res) => {
      res.render('user/register', {isAuthenticated: false})
@@ -73,5 +74,42 @@ router.post("/account", auth.checkAuthenticated, async (req, res) => {
     existingUser.name = req.body.name
     existingUser.save()
     res.redirect("/user/account")
+})
+
+router.get('/request_password_reset', async (req, res) => {
+    res.render('user/request_password_reset', {isAuthenticated: false})
+})
+
+router.post('/request_password_reset', async (req, res) => {
+    const user = await getUserByEmail(req.body.email)
+    if (user) {
+        await user.sendResetPasswordEmail()
+    }
+    //flash message that if the email was found the reset password email was sent
+    res.redirect('/user/login')
+})
+
+router.get('/password_reset', async (req, res) => {
+    if (!req.query['email'] || !req.query['token']) {
+        // the link was incorrect, make sure that you click the link in the email. Please try again. If this problem keeps occuring contact support.
+        return res.redirect('/user/login')
+    }
+
+    if (req.body.password != req.body.repeat_password) {
+        // flash message that the password must be equal
+        return res.render('/user/password_reset')
+    }
+
+    const user = await getUserByEmail(req.query.email)
+
+    if (req.query.token != user.reset_password_token) {
+        // flash token is invalid - please try again
+        res.redirect('/user/login')
+    }
+    
+    // password change successful
+    // here the token and email must be passed to verify this once again
+    return res.render('/user/password_reset')
+
 })
 module.exports = router
