@@ -8,6 +8,7 @@ function initialize(passport, getUserByEmail) {
     const authenticateUser = async (email, password, done) => {
         const user = await getUserByEmail(email);
         if (user == null) {return done(null, false, {message: 'This user does not exist'})};
+        if (user.email_verified == false) {return done(null, false, {message: 'Email not verified'})};
         try {
             if (await bcrypt.compare(password, user.password)) {
                 return done(null, user, {message: 'Logged in successfully'});                
