@@ -231,3 +231,6 @@ add column reset_password_token varchar(64);
 
 alter table "user"
 add column reset_password_token_dttm timestamp;
+
+alter table "user"
+add column email_verified boolean not null default false;

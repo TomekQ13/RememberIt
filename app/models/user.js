@@ -113,13 +113,15 @@ class User {
     }
 }
 
+const userAttributes = 'id, insert_dttm, email, password, name, phone, premium_valid_to, stripe_customer_id, reset_password_token, reset_password_token_dttm, email_verified';
+
 async function getUserById(id) { 
-    const r = await client.query('select id, insert_dttm, email, password, name, phone, premium_valid_to, stripe_customer_id, reset_password_token, reset_password_token_dttm from "user" where id = $1', [id])
+    const r = await client.query('select ' + userAttributes + ' from "user" where id = $1', [id])
     return new User(r.rows[0])
 }
 
 async function getUserByEmail(email) {
-    const r = await client.query('select id, insert_dttm, email, password, name, premium_valid_to, stripe_customer_id, reset_password_token, reset_password_token_dttm from "user" where email = $1', [email.toLowerCase()])
+    const r = await client.query('select ' + userAttributes + ' from "user" where email = $1', [email.toLowerCase()])
     return new User(r.rows[0])
 }
 
