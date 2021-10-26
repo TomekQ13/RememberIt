@@ -76,11 +76,11 @@ router.post("/account", auth.checkAuthenticated, async (req, res) => {
     res.redirect("/user/account")
 })
 
-router.get('/request_password_reset', async (req, res) => {
+router.get('/request_password_reset', auth.checkNotAuthenticated, async (req, res) => {
     res.render('user/request_password_reset', {isAuthenticated: false})
 })
 
-router.post('/request_password_reset', async (req, res) => {
+router.post('/request_password_reset', auth.checkNotAuthenticated, async (req, res) => {
     const user = await getUserByEmail(req.body.email)
     if (user) {
         await user.sendResetPasswordEmail()
@@ -89,27 +89,44 @@ router.post('/request_password_reset', async (req, res) => {
     res.redirect('/user/login')
 })
 
-router.get('/password_reset', async (req, res) => {
+router.get('/password_reset', auth.checkNotAuthenticated, async (req, res) => {
     if (!req.query['email'] || !req.query['token']) {
         // the link was incorrect, make sure that you click the link in the email. Please try again. If this problem keeps occuring contact support.
         return res.redirect('/user/login')
     }
 
+    const user = await getUserByEmail(req.query.email)
+    if (req.query.token != user.reset_password_token) {
+        // flash token is invalid - please try again
+        return res.redirect('/user/login')
+    }  
+
+    res.render('user/password_reset', {email: req.query.email, token: req.query.token, isAuthenticated: false})
+})
+
+router.post('/password_reset', auth.checkNotAuthenticated, async (req, res) => {
+    if (!req.query['email'] || !req.query['token']) {
+        // the link was incorrect, make sure that you click the link in the email. Please try again. If this problem keeps occuring contact support.
+        console.log('abcd')
+        return res.redirect('/user/login')
+    }
+
     if (req.body.password != req.body.repeat_password) {
         // flash message that the password must be equal
-        return res.render('/user/password_reset')
+        return res.render('user/password_reset', {isAuthenticated: false})
     }
 
     const user = await getUserByEmail(req.query.email)
-
-    if (req.query.token != user.reset_password_token) {
+    if (req.query.token != user.reset_password_token || !user.isResetPasswordTokenValid) {
         // flash token is invalid - please try again
-        res.redirect('/user/login')
+        console.log('aaaabcd')
+        return res.redirect('/user/login')
     }
-    
-    // password change successful
-    // here the token and email must be passed to verify this once again
-    return res.render('/user/password_reset')
 
+    const hashedPassword = await bcrypt.hash(req.body.password, 10);
+    await user.changePassword(hashedPassword)
+    // flash password change successfully
+
+    return res.redirect('/user/login')
 })
 module.exports = router

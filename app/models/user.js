@@ -13,6 +13,10 @@ class User {
         if (params['premium_valid_to']) {
             this.isPremium = isDatetimeAfterNow(params.premium_valid_to)
         }
+
+        if (params['reset_password_token']) {
+            this.isResetPasswordTokenValid = isDatetimeAfterNow(params.reset_password_token_dttm)
+        }
     }
 
     async save() {
@@ -62,16 +66,21 @@ class User {
 
     async sendResetPasswordEmail() {        
         const resetPasswordToken = randomString(64)
-        const resetPasswordLink = new URL(process.env.STRIPE_DOMAIN + '/user/reset_password')
-        let params = new URLSearchParams(resetPasswordLink.search)
-        params.set('email', this.email)
-        params.set('token', resetPasswordToken)
+        let resetPasswordLink = new URL(process.env.STRIPE_DOMAIN + '/user/password_reset')
+        resetPasswordLink.searchParams.set('email', this.email)
+        resetPasswordLink.searchParams.set('token', resetPasswordToken)
+        let name;
+        if (this.name) {
+            name = ' ' + this.name
+        } else {
+            name = ''
+        }
 
         const body_text = `
-        Hi ${this.name},
+        Hi${name},
         
         If you need to reset your password click here: ${resetPasswordLink}
-        The link is valid for 60 minutes from the time it has been sent. If the link is no longer valid you can generate a new one.
+        If the link does not work copy it and paste into the browser. The link is valid for 60 minutes from the time it has been sent. If the link is no longer valid you can generate a new one.
 
         If you did not make this request then ignore this email and no changes will be made.
 
@@ -79,10 +88,10 @@ class User {
         Never forget it team
         `
         const body_html = `
-        <h2>Hi ${this.name},</h2>
+        <h3>Hi${name},</h3>
         <p>
-        If you need to reset your password click here: <a href="${resetPasswordLink}">${resetPasswordLink}</a><br>
-        The link is valid for 60 minutes from the time it has been sent. If the link is no longer valid you can generate a new one.
+        If you need to reset your password click here: <a href="${resetPasswordLink}">Reset password</a><br>
+        If the link does not work copy it and paste into the browser. The link is valid for 60 minutes from the time it has been sent. If the link is no longer valid you can generate a new one.
         </p>
         <p>
         If you did not make this request then ignore this email and no changes will be made.

@@ -12,10 +12,11 @@ initializePassport.initialize(
 const flash = require('express-flash');
 const session = require('express-session');
 const cookieParser = require('cookie-parser')
+const path = require('path')
 
 
 app.set('view engine', 'ejs');
-app.set('views', __dirname + '/views');
+app.set('views', path.join(__dirname + '/views'));
 app.set('layout', 'layouts/layout');
 app.use(expressLayouts);
 app.use(express.static('public'));
