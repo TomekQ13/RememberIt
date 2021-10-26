@@ -2,8 +2,12 @@ const utils = require('../utils')
 const client = require('../db.js')
 
 class Token {
-    async generateToken(len, user_id) {
+    constructor(len=64) {
         this.tokenValue = utils.randomString(len)
+    }
+
+    async saveTokenToDB(user_id) {
+        // this saves the token as the RememberMe token
         try {
             await client.query(`
             insert into "token" (user_id, token_value, valid_to_dttm)

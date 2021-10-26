@@ -54,8 +54,8 @@ function initialize(passport, getUserByEmail) {
 
 // here is a problem for some reason when this is called it gets the whole user object
 async function issueToken(user, done) {
-    const token = new Token()
-    const token_value = await token.generateToken(64, user.id)
+    const token = new Token(64)
+    const token_value = await token.saveTokenToDB(user.id)
     return done(null, token_value)
 }
 
