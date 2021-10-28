@@ -1,6 +1,9 @@
 const client = require('../db.js')
 const {randomString, isDatetimeAfterNow} = require('../utils')
 const Emailer = require('../mails')
+const passwordResetEmail = require('../mails/password_reset.js')
+const emailVerificationEmail = require('../mails/password_reset.js')
+const Token = require('./token.js')
 
 class User {
     constructor(params) {
@@ -17,16 +20,20 @@ class User {
         if (params['reset_password_token']) {
             this.isResetPasswordTokenValid = isDatetimeAfterNow(params.reset_password_token_dttm)
         }
+
+        if (params['email_verified_token']) {
+            this.isEmailVerifiedTokenValid = isDatetimeAfterNow(params.email_verified_token_dttm)
+        }
     }
 
     async save() {
-        const existingUser = await client.query('select 1 from "user" where email = $1', [this.email])
+        const existingUser = getUserByEmail(email)
         // checks if the user is new or already exists
         if (existingUser.rows.length === 0) {
-            await client.query('insert into "user" (email, password) values ($1, $2)', [this.email, this.password])
+            await client.query('insert into "user" (email, password) values ($1, $2)', [this.email.toLowerCase(), this.password])
             console.log(`User with email ${this.email} saved successfully as a new user`)
         } else {
-            await client.query('update "user" set name = $1, update_dttm = now(), phone = $3 where email = $2', [this.name, this.email, this.phone])
+            await client.query('update "user" set name = $1, update_dttm = now(), phone = $3 where email = $2', [this.name, this.email.toLowerCase(), this.phone])
             console.log(`User with email ${this.email} updated successfully`)
         }            
     }
@@ -64,66 +71,88 @@ class User {
         }
     }
 
+    async saveEmailVerificationToken(token) {
+        try {
+            await client.query(`
+                update "user"
+                set email_verified_token = $1, email_verified_token_dttm = now() + interval '30 day' 
+                where id = $2`, [token, this.id]
+            )
+            console.log(`Email verification token succesfully generated for user with id ${this.id}`)
+        } catch (err) {
+            console.error(`There has been an error while saving theemail verification token for user with id ${this.id}`)
+            console.error(err)
+        }   
+    }
+
     async sendResetPasswordEmail() {        
-        const resetPasswordToken = randomString(64)
+        const resetPasswordToken = (new Token(64)).tokenValue
         let resetPasswordLink = new URL(process.env.STRIPE_DOMAIN + '/user/password_reset')
         resetPasswordLink.searchParams.set('email', this.email)
         resetPasswordLink.searchParams.set('token', resetPasswordToken)
-        let name;
-        if (this.name) {
-            name = ' ' + this.name
-        } else {
-            name = ''
-        }
-
-        const body_text = `
-        Hi${name},
         
-        If you need to reset your password click here: ${resetPasswordLink}
-        If the link does not work copy it and paste into the browser. The link is valid for 60 minutes from the time it has been sent. If the link is no longer valid you can generate a new one.
-
-        If you did not make this request then ignore this email and no changes will be made.
-
-        Best regards
-        Never forget it team
-        `
-        const body_html = `
-        <h3>Hi${name},</h3>
-        <p>
-        If you need to reset your password click here: <a href="${resetPasswordLink}">Reset password</a><br>
-        If the link does not work copy it and paste into the browser. The link is valid for 60 minutes from the time it has been sent. If the link is no longer valid you can generate a new one.
-        </p>
-        <p>
-        If you did not make this request then ignore this email and no changes will be made.
-        </p>
-        <p>
-        Best regards<br>
-        Never forget it team
-        </p>
-        `        
         await this.saveResetPasswordToken(resetPasswordToken)
-
+        const email = new passwordResetEmail(this.name, resetPasswordLink)
         const emailer = new Emailer()
         await emailer.sendEmail(
             this.email,
-            'Password reset',
-            body_text,
-            body_html
+            email.subject,
+            email.text,
+            email.html
         )
+    }
+
+    async sendEmailVerificationEmail() {
+        const verifyEmailToken = (new Token(64)).tokenValue
+        let resetPasswordLink = new URL(process.env.STRIPE_DOMAIN + '/user/verify_email')
+        resetPasswordLink.searchParams.set('email', this.email)
+        resetPasswordLink.searchParams.set('token', verifyEmailToken)
+
+        await this.saveEmailVerificationToken(verifyEmailToken)
+        const email = new emailVerificationEmail(verifyEmailToken)
+        const emailer = new Emailer()
+        await emailer.sendEmail(
+            this.email,
+            email.subject,
+            email.text,
+            email.html
+        )
+    }
+
+    async verifyEmail() {
+        if (this.email_verified) return console.log(`User with user id ${this.id} is already verified. No further actions taken`)
+        try {
+            await client.query(`
+                update "user"
+                set email_verified = true
+                where id = $1
+            `, [this.id])
+            console.log(`Email verified successfully for user with id ${this.id}`)
+        } catch (err) {
+            console.error(`There has been an error while verifying an email for the user with id ${this.id}`)
+            console.error(err)
+        }    
     }
 }
 
-const userAttributes = 'id, insert_dttm, email, password, name, phone, premium_valid_to, stripe_customer_id, reset_password_token, reset_password_token_dttm, email_verified';
-
-async function getUserById(id) { 
-    const r = await client.query('select ' + userAttributes + ' from "user" where id = $1', [id])
-    return new User(r.rows[0])
+function getUserBy(attributeName,
+     userAttributes='id, insert_dttm, email, password, name, phone, premium_valid_to, stripe_customer_id, reset_password_token, reset_password_token_dttm, email_verified, email_verified_token, email_verified_token_dttm') {
+    return async (attributeValue) => {
+        let r
+        try {
+            r = await client.query('select ' + userAttributes + ' from "user" where ' + attributeName +' = $1', [attributeValue])        
+        } catch (err) {
+            console.error(`There has been an error while looking for user using ${attributeName} ${id}`)
+            console.error(err)
+        } 
+        if (r.rows.length > 0) return new User(r.rows[0])
+        return null    
+    }
 }
 
-async function getUserByEmail(email) {
-    const r = await client.query('select ' + userAttributes + ' from "user" where email = $1', [email.toLowerCase()])
-    return new User(r.rows[0])
-}
+getUserById = getUserBy('id')
+getUserByEmail = getUserBy('email')
+
 
 async function updatePremiumStatus(stripe_customer_id) {
     try {

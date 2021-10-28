@@ -14,7 +14,10 @@ router.get("/register", auth.checkNotAuthenticated, async (req, res) => {
 
 router.post("/register", auth.checkNotAuthenticated, async (req, res) => {
     const user_check = getUserByEmail(req.body.email)
-    if (user_check)
+    if (user_check) {
+        req.flash('error', 'User with this email address already exists')
+        return res.redirect('/user/register')        
+    }
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
     try {
         const user = new User({
@@ -27,7 +30,7 @@ router.post("/register", auth.checkNotAuthenticated, async (req, res) => {
         req.flash('error', 'There was an error. Please try again.')
         return res.redirect('/user/register')
     }
-    req.flash('success', 'Account created. You can now login.')
+    req.flash('success', 'Account created. Verification email has been sent. You will be able to login after verifying the email.')
     return res.redirect('/user/login')
     
 })
