@@ -12,11 +12,13 @@ router.get("/register", auth.checkNotAuthenticated, async (req, res) => {
      res.render('user/register', {isAuthenticated: false})
 })
 
-router.post("/register", auth.checkNotAuthenticated, async (req, res) => { 
+router.post("/register", auth.checkNotAuthenticated, async (req, res) => {
+    const user_check = getUserByEmail(req.body.email)
+    if (user_check)
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
     try {
         const user = new User({
-            email: req.body.email,
+            email: req.body.email.toLowerCase(),
             password: hashedPassword
         })
         user.save()
@@ -107,7 +109,6 @@ router.get('/password_reset', auth.checkNotAuthenticated, async (req, res) => {
 router.post('/password_reset', auth.checkNotAuthenticated, async (req, res) => {
     if (!req.query['email'] || !req.query['token']) {
         // the link was incorrect, make sure that you click the link in the email. Please try again. If this problem keeps occuring contact support.
-        console.log('abcd')
         return res.redirect('/user/login')
     }
 
@@ -119,7 +120,6 @@ router.post('/password_reset', auth.checkNotAuthenticated, async (req, res) => {
     const user = await getUserByEmail(req.query.email)
     if (req.query.token != user.reset_password_token || !user.isResetPasswordTokenValid) {
         // flash token is invalid - please try again
-        console.log('aaaabcd')
         return res.redirect('/user/login')
     }
 
@@ -128,5 +128,22 @@ router.post('/password_reset', auth.checkNotAuthenticated, async (req, res) => {
     // flash password change successfully
 
     return res.redirect('/user/login')
+})
+
+router.get('/verify_email', auth.checkNotAuthenticated, async (req, res) => {
+    if (!req.query['email'] || !req.query['token']) {
+        // the link was incorrect, make sure that you click the link in the email. Please try again. If this problem keeps occuring contact support.
+        return res.redirect('/user/login')
+    }
+
+    const user = await getUserByEmail(req.query.email)
+    if (req.query.token != user.email_verified_token || !user.isEmailVerifiedTokenValid) {
+        // flash token is invalid - please try again
+        return res.redirect('/user/login')
+    }
+
+    user.verifyEmail()
+    // flash email verified successfully
+    res.redirect('/user/login')
 })
 module.exports = router
