@@ -1,5 +1,5 @@
 <div class="container">
-    <h2 class="">Register</h2>
+    <h2 class="mt-2">Register</h2>
  <form action="/user/register" method="POST">
      <div class="form-group mb-2">
        <label for="email">Email</label>
@@ -9,6 +9,10 @@
        <label for="password">Password</label>
        <input type="password" class="form-control mt-1" id="password" placeholder="Enter password" name="password" required>
      </div>
+     <div class="form-group mb-2">
+        <label for="repeat_password">Repeat password</label>
+        <input type="password" class="form-control mt-1" id="repeat_password" placeholder="Repeat password" name="repeat_password" required>
+      </div>
      <button type="submit" class="btn btn-primary">Register</button>
    </form>
 </div>

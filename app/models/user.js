@@ -2,7 +2,7 @@ const client = require('../db.js')
 const {randomString, isDatetimeAfterNow} = require('../utils')
 const Emailer = require('../mails')
 const passwordResetEmail = require('../mails/password_reset.js')
-const emailVerificationEmail = require('../mails/password_reset.js')
+const emailVerificationEmail = require('../mails/email_verification.js')
 const Token = require('./token.js')
 
 class User {
@@ -26,8 +26,18 @@ class User {
         }
     }
 
+    async saveUserToDatabase() {
+        try {
+            await client.query('insert into "user" (email, password) values ($1, $2)', [this.email.toLowerCase(), this.password])
+            console.log(`User with email ${this.email} saved successfully as a new user`) 
+        } catch (err) {
+            console.error('An error encountered while saving a user to the database')
+            console.error(err)
+        }
+    }
+
     async save() {
-        const existingUser = getUserByEmail(email)
+        const existingUser = getUserByEmail(email.toLowerCase())
         // checks if the user is new or already exists
         if (existingUser.rows.length === 0) {
             await client.query('insert into "user" (email, password) values ($1, $2)', [this.email.toLowerCase(), this.password])
@@ -76,11 +86,11 @@ class User {
             await client.query(`
                 update "user"
                 set email_verified_token = $1, email_verified_token_dttm = now() + interval '30 day' 
-                where id = $2`, [token, this.id]
+                where email = $2`, [token, this.email]
             )
-            console.log(`Email verification token succesfully generated for user with id ${this.id}`)
+            console.log(`Email verification token succesfully generated for user with email ${this.email}`)
         } catch (err) {
-            console.error(`There has been an error while saving theemail verification token for user with id ${this.id}`)
+            console.error(`There has been an error while saving theemail verification token for user with id ${this.email}`)
             console.error(err)
         }   
     }
@@ -92,11 +102,11 @@ class User {
         resetPasswordLink.searchParams.set('token', resetPasswordToken)
         
         await this.saveResetPasswordToken(resetPasswordToken)
-        const email = new passwordResetEmail(this.name, resetPasswordLink)
+        const email = new passwordResetEmail(this.name, resetPasswordLink.href)
         const emailer = new Emailer()
         await emailer.sendEmail(
             this.email,
-            email.subject,
+            passwordResetEmail.subject,
             email.text,
             email.html
         )
@@ -104,16 +114,16 @@ class User {
 
     async sendEmailVerificationEmail() {
         const verifyEmailToken = (new Token(64)).tokenValue
-        let resetPasswordLink = new URL(process.env.STRIPE_DOMAIN + '/user/verify_email')
-        resetPasswordLink.searchParams.set('email', this.email)
-        resetPasswordLink.searchParams.set('token', verifyEmailToken)
+        let verifyEmailLink = new URL(process.env.STRIPE_DOMAIN + '/user/verify_email')
+        verifyEmailLink.searchParams.set('email', this.email)
+        verifyEmailLink.searchParams.set('token', verifyEmailToken)
 
         await this.saveEmailVerificationToken(verifyEmailToken)
-        const email = new emailVerificationEmail(verifyEmailToken)
+        const email = new emailVerificationEmail(verifyEmailLink.href)
         const emailer = new Emailer()
         await emailer.sendEmail(
             this.email,
-            email.subject,
+            emailVerificationEmail.subject,
             email.text,
             email.html
         )

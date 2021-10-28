@@ -15,7 +15,7 @@
         </form>
     </div>
     <div class="mt-4">
-        <h3 class="mb-1">Premium status</h3>
+        <h3>Premium status</h3>
         <% if (isPremium) { %>
             <p class="mb-1">Premium account active until <%= premiumValidTo.toLocaleString('en-EN', {
                 weekday: 'long',
@@ -27,7 +27,8 @@
                 <button id="checkout-and-portal-button" type="submit" class="btn btn-primary">Manage your subscription</button>
               </form>         
         <% } else { %>
-            </p>Premium account inactive. <a href="/subscription">Upgrade here</a></p>
+            <p class="mb-0">Premium account inactive. <a href="/subscription">Upgrade here</a></p>
+            <p>Premium account gives you the possibility to get SMS reminders.</p>
         <% } %>        
     </div>
 </div>

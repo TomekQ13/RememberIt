@@ -13,18 +13,30 @@ router.get("/register", auth.checkNotAuthenticated, async (req, res) => {
 })
 
 router.post("/register", auth.checkNotAuthenticated, async (req, res) => {
-    const user_check = getUserByEmail(req.body.email)
+    const user_check = await getUserByEmail(req.body.email.toLowerCase())
     if (user_check) {
         req.flash('error', 'User with this email address already exists')
         return res.redirect('/user/register')        
     }
+
+    if (req.body.password.length < 8) {
+        req.flash('error', 'Password must be 8 characters or longer')
+        return res.redirect('/user/register')   
+    }
+
+    if (req.body.password != req.body.repeat_password) {
+        req.flash('error', 'Passwords must be the same')
+        return res.redirect('/user/register')   
+    }
+
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
     try {
         const user = new User({
             email: req.body.email.toLowerCase(),
             password: hashedPassword
         })
-        user.save()
+        await user.saveUserToDatabase()
+        await user.sendEmailVerificationEmail()
     } catch(e) {
         console.log(e)
         req.flash('error', 'There was an error. Please try again.')
