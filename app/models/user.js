@@ -37,9 +37,9 @@ class User {
     }
 
     async save() {
-        const existingUser = getUserByEmail(email.toLowerCase())
+        const existingUser = getUserByEmail(this.email.toLowerCase())
         // checks if the user is new or already exists
-        if (existingUser.rows.length === 0) {
+        if (!existingUser) {
             await client.query('insert into "user" (email, password) values ($1, $2)', [this.email.toLowerCase(), this.password])
             console.log(`User with email ${this.email} saved successfully as a new user`)
         } else {

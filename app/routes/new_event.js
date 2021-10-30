@@ -6,9 +6,10 @@ const auth = require('../auth')
 const flashMsg= require('../flashMessages.js')
 
 router.get("/", auth.checkAuthenticated,  async (req, res) => {
+    let repeat_labels
     try {
     // query selects all repeat enum values
-        var repeat_labels = await client.query('SELECT unnest(enum_range(NULL::repeat))')
+        repeat_labels = await client.query('SELECT unnest(enum_range(NULL::repeat))')
     } catch (e) {
         console.error(e)
         console.error('There has been an error while querying all repeat enum values')
@@ -20,9 +21,9 @@ router.get("/", auth.checkAuthenticated,  async (req, res) => {
 })
 
 router.post("/", auth.checkAuthenticated, async (req, res) => {
-    console.log(req.body)
+    let event
     try {
-        var event = new Event({
+        event = new Event({
             'user_id': req.user.id,
             'name': req.body.name,
             'first_date': req.body.first_date,

@@ -9,8 +9,9 @@ router.get("/", async (req, res) => {
     if (!req.isAuthenticated()) {
         return res.redirect("/about")
     }
+    let events7Days
     try {
-        const events7Days = await getEventsNextDays(7, req.user.id)        
+        events7Days = await getEventsNextDays(7, req.user.id)        
     } catch (err) {
         req.flash(flashMsg.generalError.htmlClass, flashMsg.generalError.msg)
         console.error(err)

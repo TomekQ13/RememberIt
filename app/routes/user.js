@@ -7,7 +7,6 @@ const flashMsg = require('../flashMessages')
 const auth = require('../auth')
 const passport = require('passport')
 const initializePassport = require('../passport-config');
-const flash = require('express-flash')
 
 
 router.get("/register", auth.checkNotAuthenticated, async (req, res) => {
@@ -71,7 +70,7 @@ router.post("/login", auth.checkNotAuthenticated, passport.authenticate('local',
         console.error(err)
         console.error('There has been an error while issuing a token')
         req.flash(flashMsg.generalError.htmlClass, flashMsg.generalError.msg)
-        res.redirect('/')
+        return res.redirect('/')
     }
 
 }, (req, res) => {
@@ -85,13 +84,14 @@ router.get('/logout', auth.checkAuthenticated, (req, res) => {
 });
   
 router.get("/account", auth.checkAuthenticated, async (req, res) => {
+    let existingUser;
     try {
-        const existingUser = await getUserById(req.user.id)
+        existingUser = await getUserById(req.user.id)
     } catch (err) {
         console.error(err)
         console.error(`There has been an error while getting account details information for user with id ${req.user.id}`)
         req.flash(flashMsg.generalError.htmlClass, flashMsg.generalError.msg)
-        res.redirect('/')
+        return res.redirect('/')
     }    
     res.render('user/account', {
         isAuthenticated: true,
@@ -108,11 +108,12 @@ router.post("/account", auth.checkAuthenticated, async (req, res) => {
         existingUser.phone = req.body.phoneNumber
         existingUser.name = req.body.name
         existingUser.save()
+        req.flash('success', 'Account information updated successfully')
     } catch(err) {
         console.error(err)
         console.error(`There has been an error while updating account details information for user with id ${req.user.id}`)
         req.flash(flashMsg.generalError.htmlClass, flashMsg.generalError.msg)
-        res.redirect('/user/account')
+        return res.redirect('/user/account')
     }
     res.redirect("/user/account")
 })
@@ -127,32 +128,33 @@ router.post('/request_password_reset', auth.checkNotAuthenticated, async (req, r
         if (user) {
             await user.sendResetPasswordEmail()
         }
+        req.flash('success', 'If there is a user with this email, a message with reset password link was sent.')
     } catch (err) {
         console.error(err)
         console.error(`There has been an error while sending reset password email for email ${req.user.id}`)
         req.flash(flashMsg.generalError.htmlClass, flashMsg.generalError.msg)
-        res.redirect('/')
-    }
-    req.flash('success', 'If there is a user with this email, a message with reset password link was sent.')
+        return res.redirect('/')
+    }    
     res.redirect('/user/login')
 })
 
 router.get('/password_reset', auth.checkNotAuthenticated, async (req, res) => {
     if (!req.query['email'] || !req.query['token']) {
-        // the link was incorrect, make sure that you click the link in the email. Please try again. If this problem keeps occuring contact support.
+        req.flash('error', 'The link was incorrect, make sure that you click the link in the email. Please try again. If this problem keeps occuring contact support.')
         return res.redirect('/user/login')
     }
+    let user
     try {
-        const user = await getUserByEmail(req.query.email)
+        user = await getUserByEmail(req.query.email)
         if (req.query.token != user.reset_password_token) {
-            // flash token is invalid - please try again
+            req.flash('error', 'Token is invalid. Please try again.')
             return res.redirect('/user/login')
-        } 
+        }
     } catch (err) {
         console.error(err)
         console.error(`There has been an error while getting a user by email ${req.query.email}`)
         req.flash(flashMsg.generalError.htmlClass, flashMsg.generalError.msg)
-        res.redirect('/')
+        return res.redirect('/')
     }
     res.render('user/password_reset', {email: req.query.email, token: req.query.token, isAuthenticated: false})
 })
@@ -170,7 +172,7 @@ router.post('/password_reset', auth.checkNotAuthenticated, async (req, res) => {
     try {
         const user = await getUserByEmail(req.query.email)
         if (req.query.token != user.reset_password_token || !user.isResetPasswordTokenValid) {
-            req.flash('error', 'Token is inavlid. Please try again.')
+            req.flash('error', 'Token is invalid. Please try again.')
             return res.redirect('/user/login')
         }
     
@@ -194,7 +196,7 @@ router.get('/verify_email', auth.checkNotAuthenticated, async (req, res) => {
     try {
         const user = await getUserByEmail(req.query.email)
         if (req.query.token != user.email_verified_token || !user.isEmailVerifiedTokenValid) {
-            // flash token is invalid - please try again
+            req.flash('error', 'Token is invalid. Please try again.')
             return res.redirect('/user/login')
         }    
         user.verifyEmail()
