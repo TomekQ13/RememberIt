@@ -21,12 +21,13 @@ router.get('/cancel', auth.checkAuthenticated, (req, res) => {
 
 
 router.post('/create-checkout-session', auth.checkAuthenticated, async (req, res) => {
+    let session
     try {
         const prices = await stripe.prices.list({
             lookup_keys: [req.body.lookup_key],
             expand: ['data.product'],
           });
-        const session = await stripe.checkout.sessions.create({
+        session = await stripe.checkout.sessions.create({
         billing_address_collection: 'auto',
         payment_method_types: ['card'],
         client_reference_id: req.user.id,
@@ -45,7 +46,7 @@ router.post('/create-checkout-session', auth.checkAuthenticated, async (req, res
         console.error(err)
         console.error(`There has been an error while createing a checkout session for user with id ${req.user.id}`)
         req.flash(flashMsg.generalError.htmlClass, flashMsg.generalError.msg)
-        res.redirect('/subscription/pricing_preview')    
+        res.redirect('/subscription')    
     }
 
     res.redirect(303, session.url)

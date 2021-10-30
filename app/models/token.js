@@ -23,14 +23,16 @@ class Token {
 
     async consumeRememberMeToken(token_value, callback_fn) {
         // select a user_id based on a token value
+        let r
+        let user_id
         try {
-            var r = await client.query(`
+            r = await client.query(`
                 select user_id
                 from "token"
                 where token_value = $1
                     and valid_to_dttm >= now()`,
                 [token_value]) 
-            this.user_id = r.rows[0].user_id 
+            user_id = r.rows[0].user_id 
         } catch (err) {
             console.error('There has been an error while selecting the user_id.')
             console.error(err)
@@ -47,8 +49,8 @@ class Token {
             console.error('There has been an error while invalidating the token.')
             console.error(err)
         }
-        console.log(`Consumed a token ${token_value} for user_id = ${this.user_id}.`)
-        return callback_fn(null, this.user_id);
+        console.log(`Consumed a token ${token_value} for user_id = ${user_id}.`)
+        return callback_fn(null, user_id);
     }
 }
 
