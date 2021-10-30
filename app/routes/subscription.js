@@ -1,7 +1,7 @@
 const express = require('express')
-const { ReadyForQueryMessage } = require('pg-protocol/dist/messages')
 const router = express.Router()
 const auth = require('../auth')
+const flashMsg = require('../flashMessages')
 const stripe = require('stripe')('sk_test_51JgEU0Dw9XEVgKC7aCPNktt1cYNN2jB8dLR5h5f4Pr5S24jZhv8a3orxUZPHIkZXvfMBoDgik6V4AHr85ZO9K6RW00LPvHQH7e')
 const {saveStripeCustomerId, updatePremiumStatus, getUserById} = require('../models/user')
 
@@ -21,26 +21,33 @@ router.get('/cancel', auth.checkAuthenticated, (req, res) => {
 
 
 router.post('/create-checkout-session', auth.checkAuthenticated, async (req, res) => {
-    const prices = await stripe.prices.list({
-      lookup_keys: [req.body.lookup_key],
-      expand: ['data.product'],
-    });
-    const session = await stripe.checkout.sessions.create({
-      billing_address_collection: 'auto',
-      payment_method_types: ['card'],
-      client_reference_id: req.user.id,
-      line_items: [
-        {
-          price: prices.data[0].id,
-          // For metered billing, do not pass quantity
-          quantity: 1
-        },
-      ],
-      mode: 'subscription',
-      success_url: `${YOUR_DOMAIN}/subscription/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${YOUR_DOMAIN}/subscription/cancel`,
-    });
-    console.log(session)
+    try {
+        const prices = await stripe.prices.list({
+            lookup_keys: [req.body.lookup_key],
+            expand: ['data.product'],
+          });
+        const session = await stripe.checkout.sessions.create({
+        billing_address_collection: 'auto',
+        payment_method_types: ['card'],
+        client_reference_id: req.user.id,
+        line_items: [
+            {
+            price: prices.data[0].id,
+            // For metered billing, do not pass quantity
+            quantity: 1
+            },
+        ],
+        mode: 'subscription',
+        success_url: `${YOUR_DOMAIN}/subscription/success?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${YOUR_DOMAIN}/subscription/cancel`,
+        });
+    } catch (err) {
+        console.error(err)
+        console.error(`There has been an error while createing a checkout session for user with id ${req.user.id}`)
+        req.flash(flashMsg.generalError.htmlClass, flashMsg.generalError.msg)
+        res.redirect('/subscription/pricing_preview')    
+    }
+
     res.redirect(303, session.url)
   });
 
@@ -53,10 +60,18 @@ router.post('/create-checkout-session', auth.checkAuthenticated, async (req, res
     // This is the url to which the customer will be redirected when they are done
     // managing their billing with the portal.
     const returnUrl = YOUR_DOMAIN;
-    const portalSession = await stripe.billingPortal.sessions.create({
-      customer: user.stripe_customer_id,
-      return_url: returnUrl,
-    });
+    let portalSession;
+    try {
+        portalSession = await stripe.billingPortal.sessions.create({
+            customer: user.stripe_customer_id,
+            return_url: returnUrl,
+          });
+    } catch (err) {
+        console.error(err)
+        console.error(`There has been an error while createing a portal session for user with id ${req.user.id}`)
+        req.flash(flashMsg.generalError.htmlClass, flashMsg.generalError.msg)
+        res.redirect('/subscription/pricing_preview')    
+    }
     res.redirect(303, portalSession.url);
   });
 
@@ -65,13 +80,7 @@ router.post(
 express.raw({type: 'application/json'}),
 async (req, res) => {
     let event;
-    // Replace this endpoint secret with your endpoint's unique secret
-    // If you are testing with the CLI, find the secret by running 'stripe listen'
-    // If you are using an endpoint defined with the API or dashboard, look in your webhook settings
-    // at https://dashboard.stripe.com/webhooks
     const endpointSecret = process.env.STRIPE_WEBHOOK_SUB_SECRET;
-    // Only verify the event if you have an endpoint secret defined.
-    // Otherwise use the basic event deserialized with JSON.parse
     if (endpointSecret) {
     // Get the signature sent by Stripe
     const signature = req.headers['stripe-signature'];
@@ -93,11 +102,11 @@ async (req, res) => {
         await saveStripeCustomerId(event.data.object.client_reference_id, event.data.object.customer)
         break;
     case 'invoice.paid':
-        // checks what happens if there is not row updated - prepare a solution for this? Is this even possible with stripe?
+        // checks what happens if there is not row updated - prepare a solution for this?
         await updatePremiumStatus(event.data.object.customer)
         break;
     case 'invoice.payment_failed':
-
+        // here maybe it makes sense to add an email to the client?
         break;
     default:
         // Unexpected event type

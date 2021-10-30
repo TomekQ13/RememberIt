@@ -2,10 +2,12 @@ const express = require('express')
 const router = express.Router()
 const {User, getUserById, getUserByEmail} = require('../models/user')
 const bcrypt = require('bcrypt')
+const flashMsg = require('../flashMessages')
 
 const auth = require('../auth')
 const passport = require('passport')
 const initializePassport = require('../passport-config');
+const flash = require('express-flash')
 
 
 router.get("/register", auth.checkNotAuthenticated, async (req, res) => {
@@ -38,8 +40,9 @@ router.post("/register", auth.checkNotAuthenticated, async (req, res) => {
         await user.saveUserToDatabase()
         await user.sendEmailVerificationEmail()
     } catch(e) {
-        console.log(e)
-        req.flash('error', 'There was an error. Please try again.')
+        console.error(e)
+        console.error(`There has been an error while creating a user for email ${req.body.email}`)
+        req.flash(flashMsg.generalError.htmlClass, flashMsg.generalError.msg)
         return res.redirect('/user/register')
     }
     req.flash('success', 'Account created. Verification email has been sent. You will be able to login after verifying the email.')
@@ -57,13 +60,20 @@ router.post("/login", auth.checkNotAuthenticated, passport.authenticate('local',
     failureFlash: true
 }), async (req, res, next) => {
     // this is a middleware function to issue the token
-    if (!req.body.remember_me) {return next()}
+    if (!req.body.remember_me) return next()
+    try {
+        await initializePassport.issueToken(req.user, (err, token_value) => {
+            if (err) {return next(err)}
+            res.cookie('remember_me', token_value, {path: "/", httpOnly: true, maxAge: 86400000*30})
+            return next()
+        })
+    } catch (err) {
+        console.error(err)
+        console.error('There has been an error while issuing a token')
+        req.flash(flashMsg.generalError.htmlClass, flashMsg.generalError.msg)
+        res.redirect('/')
+    }
 
-    await initializePassport.issueToken(req.user, (err, token_value) => {
-        if (err) {return next(err)}
-        res.cookie('remember_me', token_value, {path: "/", httpOnly: true, maxAge: 86400000*30})
-        return next()
-    })
 }, (req, res) => {
     res.redirect('/')
 });
@@ -75,7 +85,14 @@ router.get('/logout', auth.checkAuthenticated, (req, res) => {
 });
   
 router.get("/account", auth.checkAuthenticated, async (req, res) => {
-    const existingUser = await getUserById(req.user.id)
+    try {
+        const existingUser = await getUserById(req.user.id)
+    } catch (err) {
+        console.error(err)
+        console.error(`There has been an error while getting account details information for user with id ${req.user.id}`)
+        req.flash(flashMsg.generalError.htmlClass, flashMsg.generalError.msg)
+        res.redirect('/')
+    }    
     res.render('user/account', {
         isAuthenticated: true,
         phone: existingUser.phone,
@@ -86,10 +103,17 @@ router.get("/account", auth.checkAuthenticated, async (req, res) => {
 })
 
 router.post("/account", auth.checkAuthenticated, async (req, res) => {
-    let existingUser = await getUserById(req.user.id)
-    existingUser.phone = req.body.phoneNumber
-    existingUser.name = req.body.name
-    existingUser.save()
+    try {
+        let existingUser = await getUserById(req.user.id)
+        existingUser.phone = req.body.phoneNumber
+        existingUser.name = req.body.name
+        existingUser.save()
+    } catch(err) {
+        console.error(err)
+        console.error(`There has been an error while updating account details information for user with id ${req.user.id}`)
+        req.flash(flashMsg.generalError.htmlClass, flashMsg.generalError.msg)
+        res.redirect('/user/account')
+    }
     res.redirect("/user/account")
 })
 
@@ -98,11 +122,18 @@ router.get('/request_password_reset', auth.checkNotAuthenticated, async (req, re
 })
 
 router.post('/request_password_reset', auth.checkNotAuthenticated, async (req, res) => {
-    const user = await getUserByEmail(req.body.email)
-    if (user) {
-        await user.sendResetPasswordEmail()
+    try {
+        const user = await getUserByEmail(req.body.email)
+        if (user) {
+            await user.sendResetPasswordEmail()
+        }
+    } catch (err) {
+        console.error(err)
+        console.error(`There has been an error while sending reset password email for email ${req.user.id}`)
+        req.flash(flashMsg.generalError.htmlClass, flashMsg.generalError.msg)
+        res.redirect('/')
     }
-    //flash message that if the email was found the reset password email was sent
+    req.flash('success', 'If there is a user with this email, a message with reset password link was sent.')
     res.redirect('/user/login')
 })
 
@@ -111,54 +142,69 @@ router.get('/password_reset', auth.checkNotAuthenticated, async (req, res) => {
         // the link was incorrect, make sure that you click the link in the email. Please try again. If this problem keeps occuring contact support.
         return res.redirect('/user/login')
     }
-
-    const user = await getUserByEmail(req.query.email)
-    if (req.query.token != user.reset_password_token) {
-        // flash token is invalid - please try again
-        return res.redirect('/user/login')
-    }  
-
+    try {
+        const user = await getUserByEmail(req.query.email)
+        if (req.query.token != user.reset_password_token) {
+            // flash token is invalid - please try again
+            return res.redirect('/user/login')
+        } 
+    } catch (err) {
+        console.error(err)
+        console.error(`There has been an error while getting a user by email ${req.query.email}`)
+        req.flash(flashMsg.generalError.htmlClass, flashMsg.generalError.msg)
+        res.redirect('/')
+    }
     res.render('user/password_reset', {email: req.query.email, token: req.query.token, isAuthenticated: false})
 })
 
 router.post('/password_reset', auth.checkNotAuthenticated, async (req, res) => {
     if (!req.query['email'] || !req.query['token']) {
-        // the link was incorrect, make sure that you click the link in the email. Please try again. If this problem keeps occuring contact support.
+        req.flash('error', 'The link was incorrect, make sure that you click the link in the email. Please try again. If this problem keeps occuring contact support.')
         return res.redirect('/user/login')
     }
 
     if (req.body.password != req.body.repeat_password) {
-        // flash message that the password must be equal
+        req.qflash('error', 'Password must be the same')
         return res.render('user/password_reset', {isAuthenticated: false})
     }
-
-    const user = await getUserByEmail(req.query.email)
-    if (req.query.token != user.reset_password_token || !user.isResetPasswordTokenValid) {
-        // flash token is invalid - please try again
-        return res.redirect('/user/login')
+    try {
+        const user = await getUserByEmail(req.query.email)
+        if (req.query.token != user.reset_password_token || !user.isResetPasswordTokenValid) {
+            req.flash('error', 'Token is inavlid. Please try again.')
+            return res.redirect('/user/login')
+        }
+    
+        const hashedPassword = await bcrypt.hash(req.body.password, 10);
+        await user.changePassword(hashedPassword)
+        req.flash('success', 'Password changed successfully')
+    } catch (err) {
+        console.error(err)
+        console.error(`There has been an error while changing the password for user with id ${req.user.id}`)
+        req.flash(flashMsg.generalError.htmlClass, flashMsg.generalError.msg)
+        res.redirect('/user/login')
     }
-
-    const hashedPassword = await bcrypt.hash(req.body.password, 10);
-    await user.changePassword(hashedPassword)
-    // flash password change successfully
-
     return res.redirect('/user/login')
 })
 
 router.get('/verify_email', auth.checkNotAuthenticated, async (req, res) => {
     if (!req.query['email'] || !req.query['token']) {
-        // the link was incorrect, make sure that you click the link in the email. Please try again. If this problem keeps occuring contact support.
+        req.flash('error', 'The link was incorrect, make sure that you click the link in the email. Please try again. If this problem keeps occuring contact support.')
         return res.redirect('/user/login')
     }
-
-    const user = await getUserByEmail(req.query.email)
-    if (req.query.token != user.email_verified_token || !user.isEmailVerifiedTokenValid) {
-        // flash token is invalid - please try again
-        return res.redirect('/user/login')
+    try {
+        const user = await getUserByEmail(req.query.email)
+        if (req.query.token != user.email_verified_token || !user.isEmailVerifiedTokenValid) {
+            // flash token is invalid - please try again
+            return res.redirect('/user/login')
+        }    
+        user.verifyEmail()
+        req.flash('succsess', 'Email verified successfully')
+    } catch (err) {
+        console.error(err)
+        console.error(`There has been an error while verifyin email for email ${req.user.id}`)
+        req.flash(flashMsg.generalError.htmlClass, flashMsg.generalError.msg)
+        res.redirect('/')
     }
-
-    user.verifyEmail()
-    // flash email verified successfully
     res.redirect('/user/login')
 })
 module.exports = router

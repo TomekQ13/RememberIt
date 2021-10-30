@@ -3,11 +3,7 @@ const router = express.Router()
 const client = require('../db.js')
 const {Event, getEventById, getEventByPublicId, deleteEventByPublicId, getAllEvents} = require('../models/event')
 const auth = require('../auth')
-const msgFlasher = require('../flashMessages.js')
-
-
-const flashMsg = new msgFlasher()
-
+const flashMsg = require('../flashMessages.js')
 
 router.get("/:public_id", auth.checkAuthenticated,  async (req, res) => {
     try {
@@ -16,10 +12,11 @@ router.get("/:public_id", auth.checkAuthenticated,  async (req, res) => {
         var existing_event = await getEventByPublicId(req.params.public_id)
     } catch (e) {
         console.error(e)
+        req.flash(flashMsg.generalError.htmlClass, flashMsg.generalError.msg)
         return res.redirect('events')
     }
     if (!existing_event.user_id == req.user.id) {
-        flashMsg.insufficientPrivileges(req)
+        flashMsg(req)
         return res.redirect('/events')
     }
     res.render('event/new_event', {repeat: repeat_labels.rows.map(el => el.unnest), existing_event: existing_event, isAuthenticated: true})
@@ -31,7 +28,7 @@ router.post("/:public_id", auth.checkAuthenticated, async (req, res) => {
     try {
         const existing_event = await getEventByPublicId(req.params.public_id)
         if (!existing_event.user_id == req.user.id) {
-            flashMsg.insufficientPrivileges(req)
+            req.flash(flashMsg.insufficientPrivileges.htmlClass, flashMsg.insufficientPrivileges.msg)
             return res.redirect('/events')
         }
     } catch (e) {
@@ -54,9 +51,10 @@ router.post("/:public_id", auth.checkAuthenticated, async (req, res) => {
         event.updateEvent()
     } catch (e) {
         console.error(e)
+        req.flash(flashMsg.generalError.htmlClass, flashMsg.generalError.msg)
         return res.redirect('/events')
     }
-
+    req.flash(flashMsg.createdSuccessfully.htmlClass, flashMsg.createdSuccessfully.msg('New event'))
     return res.redirect(`/events/${event.public_id}`)
 })
 

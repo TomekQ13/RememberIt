@@ -1,14 +1,19 @@
-const flash = require('express-flash');
-
 class flashMsg {
-    insufficientPrivileges = (req) => {
-        req.flash('error', 'Insufficient privileges to perform this action')
+    static insufficientPrivileges = {
+        'htmlClass': 'error',
+        'msg': 'Insufficient privileges to perform this action'
     }
     
-    dbError = function dbError(req) {
-        req.flash('error', 'There was an error. Please try again.')
+    static generalError = {
+        'htmlClass': 'error',
+        'msg': 'There was an error. Please try again.'
     }
 
+    static createdSuccessfully = {
+        htmlClass: 'success',
+        msg(object) { return `${object} created successfully` }
+
+    }
 }
 
 module.exports = flashMsg
