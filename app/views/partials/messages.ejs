@@ -1,20 +1,24 @@
-<% if (messages.error) { %>
-    <div class="message message-error show">
-        <p><%= messages.error %></p>
-    </div>
-<% } %>
-<% if (messages.info) { %>
-    <div class="message message-info show">
-        <p><%= messages.info %></p>
-    </div>
-<% } %>
-<% if (messages.warning) { %>
-    <div class="message message-warning show">
-        <p><%= messages.warning %></p>
-    </div>
-<% } %>
-<% if (messages.success) { %>
-    <div class="message message-success show">
-        <p><%= messages.success %></p>
+<% if (messages) { %>
+    <div class="container">
+        <% if (messages.error) { %>
+            <div class="alert alert-danger show my-message" role="alert">
+                <%= messages.error %>
+            </div>
+        <% } %>
+        <% if (messages.info) { %>
+            <div class="alert alert-info show my-message" role="alert">
+                <%= messages.info %>
+            </div>
+        <% } %>
+        <% if (messages.warning) { %>
+            <div class="alert alert-warning show my-message" role="alert">
+                <%= messages.warning %>
+            </div>
+        <% } %>
+        <% if (messages.success) { %>
+            <div class="alert alert-success show my-message container" role="alert">
+                <%= messages.success %>
+            </div>
+        <% } %>
     </div>
 <% } %>

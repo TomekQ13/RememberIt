@@ -66,3 +66,9 @@ min-width: 220px;
     transition: opacity 400ms;
 }
 
+.my-message {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    margin-bottom: 3.5rem;
+}
