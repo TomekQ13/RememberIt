@@ -61,10 +61,10 @@ addRemoveEmailReminderEL(btnRemoveEmailReminders)
 
 
 // remove messages after time with fade
-setTimeout(() => {
-    let messages = document.getElementsByClassName('alert')
-    for (let i=0; i< messages.length; i++) {
-        messages[i].classList.add('hide');
-        setTimeout(() => {messages[i].remove();}, 400)
-    }
-}, 2000);
+// setTimeout(() => {
+//     let messages = document.getElementsByClassName('alert')
+//     for (let i=0; i< messages.length; i++) {
+//         messages[i].classList.add('hide');
+//         setTimeout(() => {messages[i].remove();}, 400)
+//     }
+// }, 2000);
