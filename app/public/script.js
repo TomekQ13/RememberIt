@@ -21,10 +21,15 @@ if (reminderEmail) {
         emailReminderFormGroup.forEach(el => {
             if (reminderEmail.checked) {
                 el.classList.remove('d-none')
+                document.getElementById('btnAddEmailReminder').classList.remove('d-none')
+                document.getElementById('emailReminderLabel').classList.remove('d-none')
             } else {
                 el.classList.add('d-none')
+                document.getElementById('btnAddEmailReminder').classList.add('d-none')
+                document.getElementById('emailReminderLabel').classList.add('d-none')
             }            
         })
+        
     })
 }
 

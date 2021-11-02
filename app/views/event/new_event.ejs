@@ -41,26 +41,26 @@
         </div>
 
         <!-- email reminder -->
-        <div class="form-group">
+        <div class="form-group mt-2">
             <input type="checkbox" id="reminderEmail" name="reminderEmail" checked>
             <label for="reminderEmail" class="fw-bold">Email</label>
         </div>        
-        <% if (existing_event.remind_days_before) { %>
-            <label for="remind_days_before_email">How many days before would you like to get an email reminder?</label>
-            <% existing_event.remind_days_before.forEach((element, i) => { %>
+        <% if (existing_event.remind_days_before_email) { %>
+            <label for="remind_days_before_email" id="emailReminderLabel">How many days before would you like to get an email reminder?</label>
+            <% existing_event.remind_days_before_email.forEach((element, i) => { %>
                 <div class="form-group mb-2 mt-1 d-flex align-items-start" name="emailReminderFormGroup">
                     <span>&bull;</span>
                     <input class="mx-2" type="number" id="remind_days_before_email" name="remind_days_before_email" min="1" max="365" required value="<%= element.remind_days_before %>">
                     <button type="button" class="btn btn-outline-danger btn-sm center" name="btnRemoveEmailReminder">x</button><br>
                 </div>
-                <% if (i == existing_event.remind_days_before.length - 1) { %>
+                <% if (i == existing_event.remind_days_before_email.length - 1) { %>
                     <button type="button" class="btn btn-secondary btn-sm" id="btnAddEmailReminder">+</button>
                 <% } %>
                 
             <% }) %>
             
         <% } else { %>
-            <label for="remind_days_before_email">How many days before would you like to get an email reminder?</label>
+            <label for="remind_days_before_email" id="emailReminderLabel">How many days before would you like to get an email reminder?</label>
             <div class="form-group mb-2 mt-1 d-flex align-items-start" name="emailReminderFormGroup">
                 <span>&bull;</span>
                 <input class="mx-2" type="number" id="remind_days_before_email" name="remind_days_before_email" min="1" max="365" required>                
@@ -69,24 +69,22 @@
         <% } %>
 
         <!-- sms reminder -->
-        <div class="form-group mt-3">
-            <input type="checkbox" id="reminderSMS" name="reminderSMS" <% if (existing_event.remind_days_before_sms) { %>
-                checked
-                <% } %>            
+        <div class="form-group mt-2">
+            <input type="checkbox" id="reminderSMS" name="reminderSMS" checked
             >
             <label for="reminderSMS" class="fw-bold">SMS</label>
         </div>        
         <% if (existing_event.remind_days_before_sms) { %>
             <% existing_event.remind_days_before_sms.forEach(element => { %>
-                <div class="form-group mb-2 d-none" name="smsReminderFormGroup">
+                <div class="form-group mb-2" name="smsReminderFormGroup">
                     <label for="remind_days_before_sms">How many days before would you like to get an SMS reminder?</label>
                     <input type="number" id="remind_days_before_sms" name="remind_days_before_sms" min="1" max="365" required value="<%= element.remind_days_before %>">
                 </div>
             <% }) %>
         <% } else { %>
-            <div class="form-group mb-2 d-none" name="smsReminderFormGroup">
+            <div class="form-group mb-2" name="smsReminderFormGroup">
                 <label for="remind_days_before_sms">How many days before would you like to get an SMS reminder?</label>
-                <input type="number" id="remind_days_before_sms" name="remind_days_before_sms" min="1" max="365">
+                <input type="number" id="remind_days_before_sms" name="remind_days_before_sms" min="1" max="365" required>
             </div>
         <% } %>
 

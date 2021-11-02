@@ -73,9 +73,11 @@ class Event {
 
 async function combineEventAndReminders(queryToSelectEvent, queryParams) {
     const raw_results = await client.query(queryToSelectEvent, queryParams)
-    var results = raw_results.rows[0]
-    const reminders = await client.query('select remind_days_before from "reminder" where event_public_id = $1', [results.public_id])
-    results['remind_days_before'] = reminders.rows
+    let results = raw_results.rows[0]
+    const reminders_email = await client.query('select remind_days_before from "reminder" where event_public_id = $1 and "type" = $2', [results.public_id, 'email'])
+    results['remind_days_before_email'] = reminders_email.rows
+    const reminders_sms = await client.query('select remind_days_before from "reminder" where event_public_id = $1 and "type" = $2', [results.public_id, 'sms'])
+    results['remind_days_before_sms'] = reminders_sms.rows
     return new Event(results)
 }
 

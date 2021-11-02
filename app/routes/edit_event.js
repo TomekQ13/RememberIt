@@ -16,7 +16,7 @@ router.get("/:public_id", auth.checkAuthenticated,  async (req, res) => {
         return res.redirect('events')
     }
     if (!existing_event.user_id == req.user.id) {
-        flashMsg(req)
+        req.flash(flashMsg.insufficientPrivileges.htmlClass, flashMsg.insufficientPrivileges.msg)
         return res.redirect('/events')
     }
     res.render('event/new_event', {repeat: repeat_labels.rows.map(el => el.unnest), existing_event: existing_event, isAuthenticated: true})
