@@ -12,7 +12,11 @@ class SMSSender {
         smsMessage.source = "sdk";
         smsMessage.to = this.args.phone;
         smsMessage.body = `Hi!
-        The event ${this.args.name} is coming on ${this.args.date}.
+        The event ${this.args.name} is coming on ${this.args.date.toLocaleString('en-EN', {
+            weekday: 'long',
+            day: 'numeric', 
+            year: 'numeric', 
+            month: 'long'})}.
         `
         var smsCollection = new api.SmsMessageCollection();
 

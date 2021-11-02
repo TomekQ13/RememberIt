@@ -15,10 +15,28 @@
             <% } %>            
             <div>
                 <a href="/edit_event/<%= event.public_id %>" class="btn btn-primary d-inline" role="button">Edit</a>
-                <form action="/events/<%= event.public_id %>?_method=DELETE" method="POST" class="d-inline">
-                    <button type="submit" class="btn btn-outline-danger d-inline">Delete</button>
-                </form>
+                <button type="button" class="btn btn-outline-danger d-inline" data-bs-toggle="modal" data-bs-target="#deleteEventModal">
+                    Delete event
+                </button>
             </div>
         </div>
     </div>
 </div>
+  
+  <!-- Modal -->
+  <div class="modal fade" id="deleteEventModal" tabindex="-1" aria-labelledby="deleteEventModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="deleteEventModalLabel">Do you want to delete the event?</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Cancel</button>
+            <form action="/events/<%= event.public_id %>?_method=DELETE" method="POST" class="d-inline">
+                <button type="submit" class="btn btn-outline-danger d-inline">Delete</button>
+            </form>    
+        </div>
+      </div>
+    </div>
+  </div>
