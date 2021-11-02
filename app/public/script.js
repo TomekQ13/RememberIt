@@ -33,9 +33,11 @@ if (btnAddEmailReminder) {
     btnAddEmailReminder.addEventListener('click', () => {
         btnAddEmailReminder.insertAdjacentHTML('beforebegin', 
         `
-        <label for="remind_days_before_email">How many days before would you like to get an additional email reminder?</label>
-        <input type="number" id="remind_days_before_email" name="remind_days_before_email" min="1" max="365" required>
-        <button type="button" class="btn btn-outline-danger btn-sm" name="btnRemoveEmailReminder">+</button><br>
+        <div class="form-group mb-2 mt-2" name="emailReminderFormGroup">
+            <label for="remind_days_before_email">How many days before would you like to get an additional email reminder?</label>
+            <input type="number" id="remind_days_before_email" name="remind_days_before_email" min="1" max="365" required>
+            <button type="button" class="btn btn-outline-danger btn-sm" name="btnRemoveEmailReminder">x</button><br>
+        </div>
         `        
         )
         const btnRemoveEmailReminders = document.getElementsByName('btnRemoveEmailReminder')
@@ -48,10 +50,7 @@ if (btnAddEmailReminder) {
 function addRemoveEmailReminderEL(elements) {
     elements.forEach(el => {
         el.addEventListener('click', () => {
-            el.previousElementSibling.remove()
-            el.previousElementSibling.remove()
-            el.previousElementSibling.remove()
-            el.remove()
+            el.parentElement.remove()
         })
     })
 }

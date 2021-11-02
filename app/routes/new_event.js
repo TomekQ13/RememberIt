@@ -21,6 +21,12 @@ router.get("/", auth.checkAuthenticated,  async (req, res) => {
 })
 
 router.post("/", auth.checkAuthenticated, async (req, res) => {
+    if (req.body['remind_days_before_sms']) {
+        if (req.body['remind_days_before_sms'].length > 1) {
+            req.flash('error', 'Only one sms reminder for one event is allowed')
+            return res.render('/new_event')
+        }
+    }
     let event
     try {
         event = new Event({
