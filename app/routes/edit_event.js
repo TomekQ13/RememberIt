@@ -54,7 +54,7 @@ router.post("/:public_id", auth.checkAuthenticated, async (req, res) => {
         req.flash(flashMsg.generalError.htmlClass, flashMsg.generalError.msg)
         return res.redirect('/events')
     }
-    req.flash(flashMsg.createdSuccessfully.htmlClass, flashMsg.createdSuccessfully.msg('New event'))
+    req.flash('success', 'Event updated successfully')
     return res.redirect(`/events/${event.public_id}`)
 })
 

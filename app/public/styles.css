@@ -71,8 +71,3 @@ min-width: 220px;
     z-index: 1030;
     bottom: 0;
 }
-.center {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
