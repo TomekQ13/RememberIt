@@ -8,6 +8,8 @@ const {saveStripeCustomerId, updatePremiumStatus, getUserById} = require('../mod
 const YOUR_DOMAIN = process.env.STRIPE_DOMAIN;
 
 router.get('/', auth.checkAuthenticated, (req, res) => {
+    console.log(req.user.isPremium)
+    if (req.user.isPremium) return res.redirect('/user/account')
     res.render('subscription/pricing_preview', {isAuthenticated: true})
 })
 
