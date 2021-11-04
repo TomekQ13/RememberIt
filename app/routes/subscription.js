@@ -2,7 +2,7 @@ const express = require('express')
 const router = express.Router()
 const auth = require('../auth')
 const flashMsg = require('../flashMessages')
-const stripe = require('stripe')('sk_test_51JgEU0Dw9XEVgKC7aCPNktt1cYNN2jB8dLR5h5f4Pr5S24jZhv8a3orxUZPHIkZXvfMBoDgik6V4AHr85ZO9K6RW00LPvHQH7e')
+const stripe = require('stripe')(process.env.STRIPE_API_KEY)
 const {saveStripeCustomerId, updatePremiumStatus, getUserById} = require('../models/user')
 
 const YOUR_DOMAIN = process.env.STRIPE_DOMAIN;

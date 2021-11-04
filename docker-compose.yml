@@ -36,6 +36,7 @@ services:
              - STRIPE_DOMAIN
              - STRIPE_WEBHOOK_SUB_SECRET
              - EMAIL_PASS
+             - STRIPE_API_KEY
     mailer:
         build:
             context: ./mailer/
