@@ -35,8 +35,7 @@ router.post('/create-checkout-session', auth.checkAuthenticated, async (req, res
         client_reference_id: req.user.id,
         line_items: [
             {
-            // price: prices.data[0].id,
-            price: 'price_1JsE6GDw9XEVgKC7JzJcbf79',
+            price: prices.data[0].id,
             // For metered billing, do not pass quantity
             quantity: 1
             },
@@ -47,7 +46,7 @@ router.post('/create-checkout-session', auth.checkAuthenticated, async (req, res
         });
     } catch (err) {
         console.error(err)
-        console.error(`There has been an error while createing a checkout session for user with id ${req.user.id}`)
+        console.error(`There has been an error while creating a checkout session for user with id ${req.user.id}`)
         req.flash(flashMsg.generalError.htmlClass, flashMsg.generalError.msg)
         res.redirect('/subscription')    
     }
