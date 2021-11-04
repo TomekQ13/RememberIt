@@ -16,18 +16,23 @@ router.get("/", auth.checkAuthenticated,  async (req, res) => {
         req.flash(flashMsg.generalError.htmlClass, flashMsg.generalError.msg)
         return res.redirect('events')
     }
-    res.render('event/new_event', {repeat: repeat_labels.rows.map(el => el.unnest), existing_event: {}, isAuthenticated: true})
+    res.render('event/new_event', {repeat: repeat_labels.rows.map(el => el.unnest), existing_event: {}, isAuthenticated: true, isUserPremium: req.user.isPremium})
 
 })
 
 router.post("/", auth.checkAuthenticated, async (req, res) => {
     if (req.body['remind_days_before_sms']) {
+        if (!req.user.isPremium) {
+            req.flash('error', 'Only premium users can get SMS reminders')
+            return res.render('/new_event')
+        }
+
         if (req.body['remind_days_before_sms'].length > 1) {
             req.flash('error', 'Only one sms reminder for one event is allowed')
             return res.render('/new_event')
         }
     }
-    let event
+
     try {
         event = new Event({
             'user_id': req.user.id,

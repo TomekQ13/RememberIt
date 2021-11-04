@@ -1,5 +1,5 @@
 const client = require('../db.js')
-const {randomString, isDatetimeAfterNow} = require('../utils')
+const {isDatetimeAfterNow} = require('../utils')
 const Emailer = require('../mails')
 const passwordResetEmail = require('../mails/password_reset.js')
 const emailVerificationEmail = require('../mails/email_verification.js')
@@ -13,6 +13,7 @@ class User {
         params.email = params.email.toLowerCase()
         for(var k in params) this[k]=params[k];
 
+        this.isPremium = false
         if (params['premium_valid_to']) {
             this.isPremium = isDatetimeAfterNow(params.premium_valid_to)
         }
