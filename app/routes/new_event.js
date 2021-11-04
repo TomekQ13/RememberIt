@@ -32,7 +32,7 @@ router.post("/", auth.checkAuthenticated, async (req, res) => {
             return res.render('/new_event')
         }
     }
-
+    let event
     try {
         event = new Event({
             'user_id': req.user.id,

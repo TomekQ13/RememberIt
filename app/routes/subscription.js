@@ -28,14 +28,15 @@ router.post('/create-checkout-session', auth.checkAuthenticated, async (req, res
             lookup_keys: [req.body.lookup_key],
             expand: ['data.product'],
           });
-        console.log(`prices are ${prices.data}`)
+        console.log(`prices are ${prices.data[0].id}`)
         session = await stripe.checkout.sessions.create({
         billing_address_collection: 'auto',
         payment_method_types: ['card'],
         client_reference_id: req.user.id,
         line_items: [
             {
-            price: prices.data[0].id,
+            // price: prices.data[0].id,
+            price: 'price_1JsE6GDw9XEVgKC7JzJcbf79',
             // For metered billing, do not pass quantity
             quantity: 1
             },
