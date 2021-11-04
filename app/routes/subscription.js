@@ -25,8 +25,8 @@ router.post('/create-checkout-session', auth.checkAuthenticated, async (req, res
     let session
     try {
         const prices = await stripe.prices.list({
-            lookup_keys: [req.body.lookup_key],
-            expand: ['data.product'],
+            // lookup_keys: [req.body.lookup_key],
+            // expand: ['data.product'],
           });
         console.log(`prices are ${prices.data[0].id}`)
         session = await stripe.checkout.sessions.create({
