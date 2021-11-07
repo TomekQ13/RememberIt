@@ -69,7 +69,7 @@
         <% } %>
 
         <!-- sms reminder -->
-        <% if (isUserPremium) { %>        
+        <% if (isUserPremium && phone){ %>        
             <div class="form-group mt-2">
                 <input type="checkbox" id="reminderSMS" name="reminderSMS" checked>
                 <label for="reminderSMS" class="fw-bold">SMS</label>
@@ -87,7 +87,13 @@
                     <input type="number" id="remind_days_before_sms" name="remind_days_before_sms" min="1" max="365" required>
                 </div>
             <% } %>
-        <% } else { %>
+        <% } else if (isUserPremium && !phone) { %>
+            <div class="form-group mt-2">
+                <input type="checkbox" id="reminderSMS" name="reminderSMS" disabled>
+                <label for="reminderSMS" class="fw-bold">SMS</label><br>
+                <small>You must set a phone number in the <a href='/user/account'></a>Account tab</a> before selecting SMS reminders. </small>
+            </div>
+        <% } else { %>         
             <div class="form-group mt-2">
                 <input type="checkbox" id="reminderSMS" name="reminderSMS" disabled>
                 <label for="reminderSMS" class="fw-bold">SMS</label><br>

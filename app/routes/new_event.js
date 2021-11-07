@@ -14,9 +14,9 @@ router.get("/", auth.checkAuthenticated,  async (req, res) => {
         console.error(e)
         console.error('There has been an error while querying all repeat enum values')
         req.flash(flashMsg.generalError.htmlClass, flashMsg.generalError.msg)
-        return res.redirect('events')
+        return res.redirect('/events')
     }
-    res.render('event/new_event', {repeat: repeat_labels.rows.map(el => el.unnest), existing_event: {}, isAuthenticated: true, isUserPremium: req.user.isPremium})
+    res.render('event/new_event', {repeat: repeat_labels.rows.map(el => el.unnest), existing_event: {}, isAuthenticated: true, isUserPremium: req.user.isPremium, phone: user.phone})
 
 })
 
@@ -24,13 +24,19 @@ router.post("/", auth.checkAuthenticated, async (req, res) => {
     if (req.body['remind_days_before_sms']) {
         if (!req.user.isPremium) {
             req.flash('error', 'Only premium users can get SMS reminders')
-            return res.render('/new_event')
+            return res.redirect('/new_event')
         }
 
         if (req.body['remind_days_before_sms'].length > 1) {
             req.flash('error', 'Only one sms reminder for one event is allowed')
-            return res.render('/new_event')
+            return res.redirect('/new_event')
         }
+
+        if (!req.user['phone']) {
+            req.flash('error', 'You must set a phone number in the Account tab before adding an SMS reminder')
+            return res.redirect('/new_event')
+        }
+
     }
     let event
     try {
