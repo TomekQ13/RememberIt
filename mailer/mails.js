@@ -59,8 +59,16 @@ class EmailSender {
         this.args = args
     }
 
-    async send(eventName, eventDate) {
-        await sendReminder(this.transporter, this.args.name, this.args.date, this.args.email)
+    async send() {
+        try {
+            await sendReminder(this.transporter, this.args.name, this.args.date, this.args.email)
+            this.status = 'success'
+        } catch (err) {
+            console.error(err)
+            console.log(`There has been an error while sending an email to ${this.args.email}`)
+        }
+        
+
     }
 }
 

@@ -30,7 +30,9 @@ async function main() {
         reminders.forEach(async el => {
             const sender = senderFactory(el)
             await sender.send().then(() => {
-                updateReminderSentDttm(client, el.id)
+                if (sender.status === 'success') {
+                    updateReminderSentDttm(client, el.id)
+                }                
             }).catch((err) => {
                 console.error(err)
             })
