@@ -16,7 +16,7 @@ router.get("/", auth.checkAuthenticated,  async (req, res) => {
         req.flash(flashMsg.generalError.htmlClass, flashMsg.generalError.msg)
         return res.redirect('/events')
     }
-    res.render('event/new_event', {repeat: repeat_labels.rows.map(el => el.unnest), existing_event: {}, isAuthenticated: true, isUserPremium: req.user.isPremium, phone: user.phone})
+    res.render('event/new_event', {repeat: repeat_labels.rows.map(el => el.unnest), existing_event: {}, isAuthenticated: true, isUserPremium: req.user.isPremium, phone: req.user.phone})
 
 })
 
