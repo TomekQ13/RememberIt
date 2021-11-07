@@ -25,11 +25,11 @@ class SMSSender {
         this.smsApi.smsSendPost(smsCollection).then(function(response) {
         if (response.body.http_code = 200) {
             this.status = "success"
-            console.log(`SMS about event ${args.name} on ${args.date} sent successfully`)
+            console.log(`SMS about event ${this.args.name} on ${this.args.date} sent successfully`)
         }
         }).catch(function(err){
             console.error(err.body)
-            console.error(`THere has been an errro while sending SMS for event ${args.name} on ${args.date}`)
+            console.error(`THere has been an errro while sending SMS for event ${this.args.name} on ${this.args.date}`)
         });
     }
 
