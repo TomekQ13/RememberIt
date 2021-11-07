@@ -53,7 +53,7 @@ app.use('/edit_event', editEventRouter)
 const subscriptionRouter = require('./routes/subscription')
 app.use('/subscription', subscriptionRouter)
 
-app.listen(process.env.PORT || 80, () => {
+app.listen(process.env.PORT || 3000, () => {
     console.log("Application started and Listening on port 80");
   });
 
