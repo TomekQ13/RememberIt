@@ -14,7 +14,7 @@ function senderFactory(args) {
         'email': new EmailSender(args)
     }
     if (args.type in senderTypes) {
-        console.log(`For ${args.type} type returning ${senderTypes[args.type].constructor.name}`)
+        // console.log(`For ${args.type} type returning ${senderTypes[args.type].constructor.name}`)
         return senderTypes[args.type]
     } else {
         console.error('Unknown sender type.')
