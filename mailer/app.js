@@ -36,7 +36,7 @@ async function main() {
             })
 
         });
-        await sleep(10*60*1000)
+        await sleep(5*60*1000)
     }
 }
 main()
