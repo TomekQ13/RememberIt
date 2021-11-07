@@ -54,6 +54,8 @@ services:
              - POSTGRES_DATABASE
              - POSTGRES_HOST
              - EMAIL_PASS
+             - CLICKSEND_EMAIL
+             - CLICKSEND_API_KEY
     nginx:
         image: nginx:1.15-alpine
         ports:
