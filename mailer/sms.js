@@ -17,6 +17,8 @@ class SMSSender {
             day: 'numeric', 
             year: 'numeric', 
             month: 'long'})}.
+        Best regards
+        Neverforgetit team
         `
         var smsCollection = new api.SmsMessageCollection();
 
