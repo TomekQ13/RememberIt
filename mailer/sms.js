@@ -21,19 +21,17 @@ class SMSSender {
         Neverforgetit team
         `
         var smsCollection = new api.SmsMessageCollection();
-
         smsCollection.messages = [smsMessage];
-
-        this.smsApi.smsSendPost(smsCollection)
-        .then(function(response) {
+        try {
+            let response = await this.smsApi.smsSendPost(smsCollection)
             if (response.body.http_code = 200) {
                 this.status = "success"
-                // console.log(`SMS about event ${this.args.name} on ${this.args.date} sent successfully`)
+                console.log(`SMS about event ${this.args.name} on ${this.args.date} sent successfully`)
             }
-        }).catch(function(err){
+        } catch (err) {
             console.error(err)
-            // console.error(`There has been an error while sending SMS for event ${this.args.name} on ${this.args.date}`)
-        });
+            console.error(`There has been an error while sending SMS for event ${this.args.name} on ${this.args.date}`)
+        }
     }
 
 

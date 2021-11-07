@@ -27,16 +27,17 @@ async function main() {
         client.query('call insert_occurences(1)')
         const reminders = await getReminders(client)
         console.log(`Selected  ${reminders.length} reminders`)
-        reminders.forEach(async el => {
-            const sender = senderFactory(el)
-            await sender.send().then(() => {
+        reminders.forEach(async el => {            
+            try {
+                const sender = senderFactory(el)
+                await sender.send()
                 if (sender.status === 'success') {
                     updateReminderSentDttm(client, el.id)
-                }                
-            }).catch((err) => {
+                } 
+            } catch (err) {
                 console.error(err)
-            })
-
+                console.error(`There has been an errro while sendin an email to ${this.email}`)
+            }
         });
         await sleep(5*60*1000)
     }
