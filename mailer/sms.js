@@ -23,11 +23,15 @@ class SMSSender {
         smsCollection.messages = [smsMessage];
 
         this.smsApi.smsSendPost(smsCollection).then(function(response) {
-        console.log(response.body);
+        if (response.body.http_code = 200) {
+            this.status = "success"
+        }
         }).catch(function(err){
         console.error(err.body);
         });
     }
+
+
 }
 
 module.exports = SMSSender
