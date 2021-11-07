@@ -90,6 +90,10 @@ with recursive monthly_occurence as (
 	select e.id, e.public_id, e.name, e.description, e.user_id, date(e.date + interval '1 year') as date, e.repeat
 	from "yearly_occurence" e
 	where e.date + interval '1 year' <= current_date + interval '1 day' * period_days
+), never_occurence as (
+	select e.id, e.public_id, e.name, e.description, e.user_id, e.first_date as date, e.repeat
+	from "event" e
+	where e.repeat = 'never'
 )
 	insert into occurence(public_id, user_id, name, description, date, repeat, remind_days_before, reminder_date, email, type, phone)
 	select e.public_id,
@@ -114,6 +118,9 @@ with recursive monthly_occurence as (
 		union all
 		select *
 		from daily_occurence
+		union all
+		select *
+		from never_occurence
 	) e left join reminder r
 		on e.public_id = r.event_public_id
 		left join "user" u
@@ -240,3 +247,6 @@ add column email_verified_token varchar(64);
 
 alter table "user"
 add column email_verified_token_dttm timestamp;
+
+alter table "occurence"
+add column insert_dttm timestamp not null default now();
