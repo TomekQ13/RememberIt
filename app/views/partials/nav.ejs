@@ -19,12 +19,11 @@
                         <a class="nav-link" href="/subscription">Premium</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/user/logout">Logout</a>
+                        <a class="nav-link" data-bs-toggle="modal" data-bs-target="#logoutModal" role="button">Logout</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="/user/account">Account</a>
-                    </li>
-                    
+                    </li>                    
                 <% } else { %>
                     <li class="nav-item">
                         <a class="nav-link" href="/user/login">Login</a>
@@ -38,3 +37,21 @@
 
     </div>
   </nav>
+
+  <!-- confirm logout modal -->
+  <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="logoutModalLabel">Do you want to log out?</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <form action="/user/logout" method="GET" class="d-inline">
+                <button type="submit" class="btn btn-danger d-inline">Log out</button>
+            </form>    
+        </div>
+      </div>
+    </div>
+  </div>
