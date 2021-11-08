@@ -209,4 +209,11 @@ router.get('/verify_email', auth.checkNotAuthenticated, async (req, res) => {
     }
     res.redirect('/user/login')
 })
+
+router.post('/delete_account/:id', auth.checkAuthenticated, async (req, res) => {
+    if (req.user.id != req.params.id) {
+        req.flash(flashMsg.insufficientPrivileges.htmlClass, flashMsg.insufficientPrivileges.msg)
+        return res.redirect('/')
+    }
+})
 module.exports = router
