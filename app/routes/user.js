@@ -211,10 +211,16 @@ router.get('/verify_email', auth.checkNotAuthenticated, async (req, res) => {
 })
 
 router.post('/delete', auth.checkAuthenticated, async (req, res) => {
-    if (req.user.id != req.params.id) {
-        req.flash(flashMsg.insufficientPrivileges.htmlClass, flashMsg.insufficientPrivileges.msg)
+    try {
+        await req.user.delete()
+        req.flash('success', 'Account deleted successfully')
         return res.redirect('/')
-        // this is to do 
+    } catch (err) {
+        console.error('There has been an errro while deleting a user')
+        console.error(err)
+        req.flash(flashMsg.generalError.htmlClass, flashMsg.generalError.msg)
+        res.redirect('/user/account')
     }
+
 })
 module.exports = router

@@ -50,8 +50,13 @@ class User {
     }
 
     async delete() {
-        await client.query('delete from "user" where email = $1', [this.email])
-        console.log(`User with email ${this.email} deleted successfully`)
+        try {
+            await client.query('delete from "user" where id = $1', [this.id])
+            console.log(`User with id ${this.id} deleted successfully`)
+        } catch (err) {
+            console.error(`There has been an error while deleting the user with id ${this.id}`)
+            console.error(err)
+        }
     }
 
     async saveResetPasswordToken(token) {
