@@ -212,6 +212,10 @@ router.get('/verify_email', auth.checkNotAuthenticated, async (req, res) => {
 
 router.post('/delete', auth.checkAuthenticated, async (req, res) => {
     try {
+        if (!await bcrypt.compare(req.body.password_confirmation, req.user.password)) {
+            req.flash('error', 'Incorrect password')
+            return res.redirect('/user/account')
+        }
         await req.user.delete()
         req.flash('success', 'Account deleted successfully')
         return res.redirect('/')

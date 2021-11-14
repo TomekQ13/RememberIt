@@ -6,14 +6,13 @@ const Token = require('./models/token')
 
 function initialize(passport, getUserByEmail) {
     const authenticateUser = async (email, password, done) => {
-        const user = await getUserByEmail(email);
-        if (user == null) {return done(null, false, {message: 'This user does not exist'})};
-        if (user.email_verified == false) {return done(null, false, {message: 'Email not verified'})};
         try {
-            if (await bcrypt.compare(password, user.password)) {
+            const user = await getUserByEmail(email);
+            const compare = await bcrypt.compare(password, user.password)
+            if (user == null || !compare) {return done(null, false, {message: 'This user does not exist or the password is incorrect'})}; // here change to display the same message if the user is not found or the password is inccorect
+            if (user.email_verified == false) {return done(null, false, {message: 'Email not verified'})};
+            if (compare) {
                 return done(null, user, {message: 'Logged in successfully'});                
-            } else {
-                return done(null, false, {message: 'Incorrect password'});
             }
         } catch (e) {
             return done(e);
