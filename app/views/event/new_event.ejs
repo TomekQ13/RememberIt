@@ -87,7 +87,7 @@
                     <input type="number" id="remind_days_before_sms" name="remind_days_before_sms" min="1" max="365" required>
                 </div>
             <% } %>
-        <% } else if (isUserPremium && !phone) { %>
+        <!-- <% } else if (isUserPremium && !phone) { %>
             <div class="form-group mt-2">
                 <input type="checkbox" id="reminderSMS" name="reminderSMS" disabled>
                 <label for="reminderSMS" class="fw-bold">SMS</label><br>
@@ -99,7 +99,7 @@
                 <label for="reminderSMS" class="fw-bold">SMS</label><br>
                 <small>SMS reminders are available for premium users. <a href='/subscription'>Upgrade here.</a></small>
             </div>
-        <% } %>
+        <% } %> -->
         <div class="mt-3">
             <button type="submit" class="btn btn-primary">Submit</button>
         </div>  
