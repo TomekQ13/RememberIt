@@ -27,7 +27,8 @@ async function getReminders(client) {
     from "occurence" 
     where 
         reminder_date = current_date 
-        and sent_dttm is null`)
+        and sent_dttm is null
+        and type = 'email'`)
     return reminders.rows    
 }
 
