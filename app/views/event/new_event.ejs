@@ -69,7 +69,7 @@
         <% } %>
 
         <!-- sms reminder -->
-        <% if (isUserPremium && phone){ %>        
+        <!-- <% if (isUserPremium && phone){ %>        
             <div class="form-group mt-2">
                 <input type="checkbox" id="reminderSMS" name="reminderSMS" checked>
                 <label for="reminderSMS" class="fw-bold">SMS</label>
@@ -86,7 +86,7 @@
                     <label for="remind_days_before_sms">How many days before would you like to get an SMS reminder?</label>
                     <input type="number" id="remind_days_before_sms" name="remind_days_before_sms" min="1" max="365" required>
                 </div>
-            <% } %>
+            <% } %> -->
         <!-- <% } else if (isUserPremium && !phone) { %>
             <div class="form-group mt-2">
                 <input type="checkbox" id="reminderSMS" name="reminderSMS" disabled>
